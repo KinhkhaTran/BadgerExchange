@@ -17,7 +17,7 @@ const LoginScreen = ({ navigation }) => {
     <View style={styles.container}>
       {/* Bucky Logo*/}
       <Image 
-        source={require('./assets/bucky.png')} 
+        source={require('../assets/bucky.png')} 
         style={styles.logo}
       />
 

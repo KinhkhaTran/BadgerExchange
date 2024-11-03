@@ -23,7 +23,7 @@ const RegisterScreen = ({ navigation }) => {
   return (
     <View style={styles.container}>
       <Image
-        source={require('./assets/bucky.png')} // Add logo image to the assets folder
+        source={require('../assets/bucky.png')} // Add logo image to the assets folder
         style={styles.logo}
       />
 

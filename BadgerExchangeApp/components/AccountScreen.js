@@ -34,7 +34,7 @@ const AccountScreen = () => {
 
       <View style={styles.profileSection}> 
         <Image  
-          source={require('./assets/profile-placeholder.jpg')}  // Placehold image, TODO replace with actual image
+          source={require('../assets/profile-placeholder.jpg')}  // Placehold image, TODO replace with actual image
           style={styles.profileImage}
         />
         <View>
