@@ -1,22 +1,20 @@
 import React from 'react';
-import {
-  View,
-  Text,
-  TextInput,
-  TouchableOpacity,
-  StyleSheet,
-  FlatList,
-  Image,
-} from 'react-native';
+import { View, Text, TextInput, TouchableOpacity, StyleSheet, FlatList, Image } from 'react-native';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 
-const HomeScreen = ({ navigation }) => {
-  const placeholderItems = [{ id: '1' }, { id: '2' }, { id: '3' }];
+const TextbookScreen = ({ navigation }) => {
+  const placeholderItems = [
+    { id: '1', name: 'CS300', price: 30 },
+    { id: '2', name: 'CS310', price: 30 },
+    { id: '3', name: 'CS320', price: 30 },
+    { id: '4', name: 'CS330', price: 25 },
+  ];
 
-  const renderItem = () => (
-    <TouchableOpacity style={styles.itemBox}>
-      <Text>Placeholder Item</Text>
-    </TouchableOpacity>
+  const renderItem = ({ item }) => (
+    <View style={styles.itemContainer}>
+      <Text style={styles.itemName}>{item.name}</Text>
+      <Text style={styles.itemPrice}>Price: ${item.price}</Text>
+    </View>
   );
 
   return (
@@ -26,60 +24,41 @@ const HomeScreen = ({ navigation }) => {
         <Icon name="bell-outline" size={30} color="#fff" />
       </View>
 
+  
       <View style={styles.searchContainer}>
-        <Icon name="menu" size={24} color="#666" style={styles.menuIcon} />
         <TextInput
-          placeholder="Hinted search text" // will need to determine functionality for the search
+          placeholder="Hinted search text"
           placeholderTextColor="#aaa"
           style={styles.searchInput}
         />
         <Icon name="magnify" size={24} color="#666" />
       </View>
 
-      <Text style={styles.sectionTitle}>Popular Events</Text>
+      {/* Need to decide implemention, possible folders for each class? */}
       <FlatList
-        horizontal
-        data={placeholderItems} // temporary placeholder, need to implement (possibly by most viewed games)
-        renderItem={renderItem}
-        keyExtractor={(item) => item.id}
-        contentContainerStyle={styles.sectionContainer}
-      />
-
-      <Text style={styles.sectionTitle}>Popular Books</Text>
-      <FlatList
-        horizontal
-        data={placeholderItems}  // temporary placeholder, need to implement (possibly by most viewed books)
-        renderItem={renderItem}
-        keyExtractor={(item) => item.id}
-        contentContainerStyle={styles.sectionContainer}
-      />
-
-      {/* Section: Upcoming Events (to view upcoming games - across sports? */}
-      <Text style={styles.sectionTitle}>Upcoming Events</Text>
-      <FlatList
-        horizontal
         data={placeholderItems}
         renderItem={renderItem}
         keyExtractor={(item) => item.id}
-        contentContainerStyle={styles.sectionContainer}
+        contentContainerStyle={styles.listContainer}
       />
 
-      {/* Bottom Navigation for between various screens of app*/}
+      {/* Bottom Navigation Bar */}
       <View style={styles.bottomNav}>
-        <Icon name="home-outline" size={30} color="#000" />
+        <TouchableOpacity onPress={() => navigation.navigate('Home')}>
+          <Icon name="home-outline" size={30} color="#000" />
+        </TouchableOpacity>
         <TouchableOpacity onPress={() => navigation.navigate('Sports')}>
           <Icon name="basketball" size={30} color="#000" />
         </TouchableOpacity>
-           <TouchableOpacity style={styles.addButton}>
+        <TouchableOpacity style={styles.addButton}>
           <Icon name="plus" size={30} color="#fff" />
         </TouchableOpacity>
-        <TouchableOpacity onPress={() => navigation.navigate('books')}>
+        <TouchableOpacity onPress={() => navigation.navigate('Books')}>
           <Icon name="book-outline" size={30} color="#000" />
         </TouchableOpacity>
         <TouchableOpacity onPress={() => navigation.navigate('Account')}>
-  <Icon name="account-outline" size={30} color="#000" />
-</TouchableOpacity>
-    
+          <Icon name="account-outline" size={30} color="#000" />
+        </TouchableOpacity>
       </View>
     </View>
   );
@@ -88,7 +67,7 @@ const HomeScreen = ({ navigation }) => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#C8102E', // Red background for Badger Colors
+    backgroundColor: '#C8102E',
     paddingTop: 40,
   },
   header: {
@@ -112,33 +91,30 @@ const styles = StyleSheet.create({
     paddingHorizontal: 10,
     marginBottom: 20,
   },
-  menuIcon: {
-    marginRight: 10,
-  },
   searchInput: {
     flex: 1,
     height: 40,
     color: '#000',
   },
-  sectionTitle: {
+  listContainer: {
+    paddingHorizontal: 20,
+  },
+  itemContainer: {
+    backgroundColor: '#fff',
+    padding: 20,
+    marginBottom: 10,
+    borderRadius: 10,
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+  },
+  itemName: {
     fontSize: 18,
     fontWeight: 'bold',
-    color: '#fff',
-    marginLeft: 20,
-    marginBottom: 10,
   },
-  sectionContainer: {
-    paddingHorizontal: 20,
-    marginBottom: 20,
-  },
-  itemBox: {
-    width: 150,
-    height: 80,
-    backgroundColor: '#fff',
-    borderRadius: 10,
-    justifyContent: 'center',
-    alignItems: 'center',
-    marginRight: 10,
+  itemPrice: {
+    fontSize: 16,
+    color: '#333',
   },
   bottomNav: {
     flexDirection: 'row',
@@ -156,8 +132,8 @@ const styles = StyleSheet.create({
     backgroundColor: '#4CAF50',
     justifyContent: 'center',
     alignItems: 'center',
-    marginTop: -30, 
+    marginTop: -30,
   },
 });
 
-export default HomeScreen;
+export default TextbookScreen;

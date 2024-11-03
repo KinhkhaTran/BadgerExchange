@@ -4,6 +4,9 @@ import { createStackNavigator } from '@react-navigation/stack';
 import LoginScreen from './LoginScreen';
 import HomeScreen from './HomeScreen';
 import AccountScreen from './AccountScreen';
+import RegisterScreen from './RegisterScreen';
+import SportsScreen from './SportsScreen';
+import TextbookScreen from './TextbookScreen';
 
 const Stack = createStackNavigator();
 
@@ -26,6 +29,17 @@ const App = () => {
           component={AccountScreen} 
           options={{ headerShown: false }} 
         />
+          <Stack.Screen 
+          name="Sports" 
+          component={SportsScreen} 
+          options={{ headerShown: false }} 
+        />
+         <Stack.Screen 
+          name="books" 
+          component={TextbookScreen} 
+          options={{ headerShown: false }} 
+        />
+        <Stack.Screen name="Register" component={RegisterScreen} />
       </Stack.Navigator>
     </NavigationContainer>
   );
