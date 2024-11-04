@@ -23,7 +23,10 @@ const HomeScreen = ({ navigation }) => {
     <View style={styles.container}>
       <View style={styles.header}>
         <Text style={styles.title}>Bucky Exchange</Text>
-        <Icon name="bell-outline" size={30} color="#fff" />
+        {/* Make the bell icon clickable to navigate to FeedScreen */}
+        <TouchableOpacity onPress={() => navigation.navigate('Feed')}>
+          <Icon name="bell-outline" size={30} color="#fff" />
+        </TouchableOpacity>
       </View>
 
       <View style={styles.searchContainer}>
