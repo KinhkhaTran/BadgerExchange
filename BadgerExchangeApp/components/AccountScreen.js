@@ -1,6 +1,5 @@
 import React from 'react';
 import { useNavigation } from '@react-navigation/native';
-
 import {
   View,
   Text,
@@ -15,7 +14,7 @@ import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 const AccountScreen = () => {
   const navigation = useNavigation();
 
-  // array of placeholder items, to be replaced with items specific to user
+  // Placeholder items for user-specific data
   const placeholderItems = [{ id: '1' }, { id: '2' }, { id: '3' }];
 
   const renderItem = () => (
@@ -24,6 +23,12 @@ const AccountScreen = () => {
     </TouchableOpacity>
   );
 
+  // Logout handler
+  const handleLogout = () => {
+    console.log("User logged out"); // Replace with actual logout functionality
+    navigation.navigate('Login'); // Redirect to login screen if applicable
+  };
+
   return (
     <View style={styles.container}>
       <View style={styles.header}>
@@ -31,10 +36,9 @@ const AccountScreen = () => {
         <Icon name="bell-outline" size={30} color="#fff" />
       </View>
 
-
-      <View style={styles.profileSection}> 
-        <Image  
-          source={require('../assets/profile-placeholder.jpg')}  // Placehold image, TODO replace with actual image
+      <View style={styles.profileSection}>
+        <Image
+          source={require('../assets/profile-placeholder.jpg')} // Placeholder image
           style={styles.profileImage}
         />
         <View>
@@ -47,35 +51,41 @@ const AccountScreen = () => {
       <View style={styles.searchContainer}>
         <Icon name="menu" size={24} color="#666" style={styles.menuIcon} />
         <TextInput
-          placeholder="Hinted search text" // again, placeholder. Likely replace with functionality to search user's own items
+          placeholder="Search your items" // Placeholder text
           placeholderTextColor="#aaa"
           style={styles.searchInput}
         />
         <Icon name="magnify" size={24} color="#666" />
       </View>
 
-      <Text style={styles.sectionTitle}>My Events/ Books</Text>
-      <FlatList // will need to implement functionality to pull in user's actual items
+      <Text style={styles.sectionTitle}>My Events/Books</Text>
+      <FlatList
         horizontal
         data={placeholderItems}
         renderItem={renderItem}
         keyExtractor={(item) => item.id}
         contentContainerStyle={styles.sectionContainer}
       />
- 
+
       <Text style={styles.sectionTitle}>My Cart</Text>
       <FlatList
-        horizontal // will need to implement functionality, this is for user's items that they haven't purchased yet
+        horizontal
         data={placeholderItems}
         renderItem={renderItem}
         keyExtractor={(item) => item.id}
         contentContainerStyle={styles.sectionContainer}
       />
 
-        {/*Buttons at bottom of screen to navigate between screens*/}
+      {/* Logout Button */}
+      <TouchableOpacity style={styles.logoutButton} onPress={handleLogout}>
+        <Text style={styles.logoutButtonText}>Logout</Text>
+      </TouchableOpacity>
+
+
+      {/* Bottom Navigation */}
       <View style={styles.bottomNav}>
         <TouchableOpacity onPress={() => navigation.navigate('Home')}>
-        <Icon name="home-outline" size={30} color="#000" />
+          <Icon name="home-outline" size={30} color="#000" />
         </TouchableOpacity>
         <TouchableOpacity onPress={() => navigation.navigate('Sports')}>
           <Icon name="basketball" size={30} color="#000" />
@@ -93,7 +103,7 @@ const AccountScreen = () => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#C8102E', // Red background to be shared across all screens
+    backgroundColor: '#C8102E',
     paddingTop: 40,
   },
   header: {
@@ -119,7 +129,7 @@ const styles = StyleSheet.create({
     height: 80,
     borderRadius: 40,
     marginRight: 20,
-    backgroundColor: '#ddd', 
+    backgroundColor: '#ddd',
   },
   profileName: {
     fontSize: 20,
@@ -133,6 +143,19 @@ const styles = StyleSheet.create({
   profileClass: {
     fontSize: 16,
     color: '#fff',
+  },
+  logoutButton: {
+    backgroundColor: '#ff5c5c',
+    paddingVertical: 10,
+    paddingHorizontal: 20,
+    borderRadius: 10,
+    alignSelf: 'center',
+    marginBottom: 20,
+  },
+  logoutButtonText: {
+    color: '#fff',
+    fontSize: 16,
+    fontWeight: 'bold',
   },
   searchContainer: {
     flexDirection: 'row',
@@ -187,7 +210,7 @@ const styles = StyleSheet.create({
     backgroundColor: '#4CAF50',
     justifyContent: 'center',
     alignItems: 'center',
-    marginTop: -30, 
+    marginTop: -30,
   },
 });
 
