@@ -7,6 +7,7 @@ import AccountScreen from './components/AccountScreen';
 import RegisterScreen from './components/RegisterScreen';
 import SportsScreen from './components/SportsScreen';
 import TextbookScreen from './components/TextbookScreen';
+import FeedScreen from './components/FeedScreen';
 
 const Stack = createStackNavigator();
 
@@ -37,6 +38,11 @@ const App = () => {
          <Stack.Screen 
           name="books" 
           component={TextbookScreen} 
+          options={{ headerShown: false }} 
+        />
+        <Stack.Screen 
+          name="Feed" 
+          component={FeedScreen} 
           options={{ headerShown: false }} 
         />
         <Stack.Screen name="Register" component={RegisterScreen} />
