@@ -8,6 +8,7 @@ import RegisterScreen from './components/RegisterScreen';
 import SportsScreen from './components/SportsScreen';
 import TextbookScreen from './components/TextbookScreen';
 import FeedScreen from './components/FeedScreen';
+import CreateListingScreen from './components/CreateListingScreen';
 
 const Stack = createStackNavigator();
 
@@ -43,6 +44,11 @@ const App = () => {
         <Stack.Screen 
           name="Feed" 
           component={FeedScreen} 
+          options={{ headerShown: false }} 
+        />
+        <Stack.Screen 
+          name="Create" 
+          component={CreateListingScreen} 
           options={{ headerShown: false }} 
         />
         <Stack.Screen name="Register" component={RegisterScreen} />

@@ -73,16 +73,15 @@ const HomeScreen = ({ navigation }) => {
         <TouchableOpacity onPress={() => navigation.navigate('Sports')}>
           <Icon name="basketball" size={30} color="#000" />
         </TouchableOpacity>
-           <TouchableOpacity style={styles.addButton}>
+        <TouchableOpacity onPress={() => navigation.navigate('Create')} style={styles.addButton}>
           <Icon name="plus" size={30} color="#fff" />
         </TouchableOpacity>
         <TouchableOpacity onPress={() => navigation.navigate('books')}>
           <Icon name="book-outline" size={30} color="#000" />
         </TouchableOpacity>
         <TouchableOpacity onPress={() => navigation.navigate('Account')}>
-  <Icon name="account-outline" size={30} color="#000" />
-</TouchableOpacity>
-    
+          <Icon name="account-outline" size={30} color="#000" />
+        </TouchableOpacity>
       </View>
     </View>
   );
