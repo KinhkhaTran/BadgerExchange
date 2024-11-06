@@ -46,7 +46,7 @@ const SportsScreen = ({ navigation }) => {
           <Icon name="home-outline" size={30} color="#000" />
         </TouchableOpacity>
         <Icon name="basketball" size={30} color="#000" />
-        <TouchableOpacity style={styles.addButton}>
+        <TouchableOpacity onPress={() => navigation.navigate('Create')} style={styles.addButton}>
           <Icon name="plus" size={30} color="#fff" />
         </TouchableOpacity>
         <TouchableOpacity onPress={() => navigation.navigate('books')}>
