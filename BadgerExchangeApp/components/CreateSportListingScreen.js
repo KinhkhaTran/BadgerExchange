@@ -26,8 +26,8 @@ const CreateSportListingScreen = ({ navigation }) => {
          {/* Back Button */}
          <TouchableOpacity onPress={() => navigation.goBack()}>
           <Icon name="arrow-left" size={30} color="#fff" />
-          <Text style={styles.sectionTitle}>Create Sport Event Listing</Text>
         </TouchableOpacity>
+        <Text style={styles.sectionTitle}>Create Sport Event Listing</Text>
   
         {/* Information Input -> need to implement storing this in database */}
         <Text style={styles.inputTitles}>Sport Category</Text>
