@@ -10,12 +10,12 @@ import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 
 const CreateListingScreen = ({ navigation }) => {
   const listing = [
-    { id: '1', name: "Sporting Event", icon: 'basketball' },
-    { id: '2', name: "Book Listing", icon: 'book-outline' },
+    { id: '1', name: "Sporting Event", icon: 'basketball', nav: 'CreateSportListing'},
+    { id: '2', name: "Book Listing", icon: 'book-outline', nav: 'CreateBookListing'},
   ];
 
   const renderItem = ({ item }) => (
-    <TouchableOpacity style={styles.itemBox}>
+    <TouchableOpacity onPress={() => navigation.navigate(item.nav)} style={styles.itemBox}>
       <Icon name={item.icon} size={24} color="#000" />
       <Text style={styles.itemText}>{item.name}</Text>
     </TouchableOpacity>
