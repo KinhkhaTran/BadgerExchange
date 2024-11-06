@@ -84,6 +84,7 @@ const styles = StyleSheet.create({
     fontSize: 23,
     fontWeight: 'bold',
     color: '#fff',
+    textAlign: 'center',
     marginLeft: 20,
   },
   sectionContainer: {
