@@ -9,6 +9,8 @@ import SportsScreen from './components/SportsScreen';
 import TextbookScreen from './components/TextbookScreen';
 import FeedScreen from './components/FeedScreen';
 import CreateListingScreen from './components/CreateListingScreen';
+import CreateBookListingScreen from './components/CreateBookListingScreen';
+import CreateSportListingScreen from './components/CreateSportListingScreen';
 
 const Stack = createStackNavigator();
 
@@ -49,6 +51,16 @@ const App = () => {
         <Stack.Screen 
           name="Create" 
           component={CreateListingScreen} 
+          options={{ headerShown: false }} 
+        />
+        <Stack.Screen 
+          name="CreateBookListing" 
+          component={CreateBookListingScreen} 
+          options={{ headerShown: false }} 
+        />
+        <Stack.Screen 
+          name="CreateSportListing" 
+          component={CreateSportListingScreen} 
           options={{ headerShown: false }} 
         />
         <Stack.Screen name="Register" component={RegisterScreen} />
