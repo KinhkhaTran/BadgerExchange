@@ -4,7 +4,6 @@ import {
   Text,
   TouchableOpacity,
   StyleSheet,
-  Image,
   FlatList,
 } from 'react-native';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
@@ -20,10 +19,35 @@ const SportsScreen = ({ navigation }) => {
   ];
 
   const renderItem = ({ item }) => (
-    <TouchableOpacity style={styles.sportButton}>
-      <Icon name={item.icon} size={24} color="#fff" style={styles.sportIcon} />
-      <Text style={styles.sportText}>{item.name}</Text>
-    </TouchableOpacity>
+    <TouchableOpacity
+    style={styles.sportButton}
+    onPress={() => {
+      if (item.name === "Women's Hockey") {
+        navigation.navigate('WomenHockeyScreen'); // Navigate to WomenHockeyScreen
+      }  
+      else if (item.name === "Men's Hockey") {
+        navigation.navigate('MenHockeyScreen'); // Navigate to MenHockeyScreen
+      }  else if (item.name === 'Football') {
+        navigation.navigate('FootballScreen'); // Navigate to FootballScreen
+      }
+      else if (item.name === "Men's Basketball") {
+        navigation.navigate('MenBasketballScreen'); // Navigate to Men's Basketball screen
+      }
+      else if (item.name === "Women's Basketball") {
+        navigation.navigate('WomenBasketballScreen'); // Navigate to Men's Basketball screen
+      }
+      else if (item.name === "Volleyball") {
+        navigation.navigate('VolleyballScreen'); // Navigate to Volleyball screen
+      }
+       else {
+        console.log(`Navigate to other sports screen: ${item.name}`);
+        // Add navigation for other sports as needed
+      }
+    }}
+  >
+    <Icon name={item.icon} size={24} color="#fff" style={styles.sportIcon} />
+    <Text style={styles.sportText}>{item.name}</Text>
+  </TouchableOpacity>
   );
 
   return (
@@ -35,7 +59,7 @@ const SportsScreen = ({ navigation }) => {
 
       <FlatList
         data={sports}
-        renderItem={renderItem} // TODO, implement logic and navigation for buttons for each sport
+        renderItem={renderItem}
         keyExtractor={(item) => item.id}
         contentContainerStyle={styles.sportList}
       />
@@ -49,7 +73,7 @@ const SportsScreen = ({ navigation }) => {
         <TouchableOpacity onPress={() => navigation.navigate('Create')} style={styles.addButton}>
           <Icon name="plus" size={30} color="#fff" />
         </TouchableOpacity>
-        <TouchableOpacity onPress={() => navigation.navigate('books')}>
+        <TouchableOpacity onPress={() => navigation.navigate('Books')}>
           <Icon name="book-outline" size={30} color="#000" />
         </TouchableOpacity>
         <TouchableOpacity onPress={() => navigation.navigate('Account')}>
