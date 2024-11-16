@@ -1,13 +1,11 @@
 import React, { useState } from 'react';
-import {
-  View,
-  Text,
-  TextInput,
-  TouchableOpacity,
-  StyleSheet,
-  Image,
-} from 'react-native';
+import { View, Text, TextInput, TouchableOpacity, StyleSheet, Image, Alert } from 'react-native';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
+import { auth, db } from './firebaseConfig';
+import { createUserWithEmailAndPassword } from 'firebase/auth';
+import { doc, setDoc } from 'firebase/firestore';
+console.log(auth);
+console.log(db);
 
 const RegisterScreen = ({ navigation }) => {
   const [name, setName] = useState('');
@@ -15,22 +13,45 @@ const RegisterScreen = ({ navigation }) => {
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
 
-  const handleRegister = () => {
-    // Add registration logic here, likely to store user data in a database
-    console.log('Registered:', { name, email, password, confirmPassword });
+  const handleRegister = async () => {
+    console.log("Register button pressed");
+
+    if (!name || !email || !password || !confirmPassword) {
+      Alert.alert('Error', 'Please fill in all fields');
+      return;
+    }
+
+    if (password !== confirmPassword) {
+      Alert.alert('Error', 'Passwords do not match');
+      return;
+    }
+
+    try {
+      const userCredential = await createUserWithEmailAndPassword(auth, email, password);
+      const user = userCredential.user;
+
+      await setDoc(doc(db, 'users', user.uid), {
+        name: name,
+        email: email,
+        uid: user.uid,
+        createdAt: new Date(), 
+      });
+
+      Alert.alert('Success', 'Registration successful');
+      navigation.navigate('Login'); 
+    } catch (error) {
+      console.error('Error registering user:', error.message);
+      Alert.alert('Error', error.message);
+    }
   };
 
   return (
     <View style={styles.container}>
-      <Image
-        source={require('../assets/bucky.png')} // Add logo image to the assets folder
-        style={styles.logo}
-      />
-
+      <Image source={require('../assets/bucky.png')} style={styles.logo} />
       <Text style={styles.title}>Bucky Exchange</Text>
       <Text style={styles.registerText}>Register</Text>
 
-      {/* Name Input for user */}
+      {/* Name Input */}
       <View style={styles.inputContainer}>
         <TextInput
           style={styles.input}
@@ -41,7 +62,7 @@ const RegisterScreen = ({ navigation }) => {
         />
       </View>
 
-      {/* Email Input for user */}
+      {/* Email Input */}
       <View style={styles.inputContainer}>
         <Icon name="email-outline" size={24} color="#666" style={styles.icon} />
         <TextInput
@@ -54,7 +75,7 @@ const RegisterScreen = ({ navigation }) => {
         />
       </View>
 
-      {/* Password Input for user, mask and also implement securing this data*/}
+      {/* Password Input */}
       <View style={styles.inputContainer}>
         <Icon name="lock-outline" size={24} color="#666" style={styles.icon} />
         <TextInput
@@ -81,9 +102,15 @@ const RegisterScreen = ({ navigation }) => {
       </View>
 
       {/* Register Button */}
-      <TouchableOpacity style={styles.registerButton} onPress={handleRegister}>
-        <Text style={styles.registerButtonText}>Register</Text>
-      </TouchableOpacity>
+      <TouchableOpacity
+  style={styles.registerButton}
+  onPress={() => {
+    console.log("Button was pressed");
+    handleRegister();  
+  }}
+>
+  <Text style={styles.registerButtonText}>Register</Text>
+</TouchableOpacity>
     </View>
   );
 };
@@ -91,7 +118,7 @@ const RegisterScreen = ({ navigation }) => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#C8102E', // Wisconsin Red
+    backgroundColor: '#C8102E',
     alignItems: 'center',
     justifyContent: 'center',
   },

@@ -1,31 +1,36 @@
 import React, { useState } from 'react';
-import { 
-  View, 
-  Text, 
-  TextInput, 
-  TouchableOpacity, 
-  StyleSheet, 
-  Image 
-} from 'react-native';
+import { View, Text, TextInput, TouchableOpacity, StyleSheet, Image, Alert } from 'react-native';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
+import { auth } from './firebaseConfig';
+import { signInWithEmailAndPassword } from 'firebase/auth';
 
 const LoginScreen = ({ navigation }) => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
 
+  const handleLogin = async () => {
+    if (!email || !password) {
+      Alert.alert('Error', 'Please enter both email and password');
+      return;
+    }
+
+    try {
+      const userCredential = await signInWithEmailAndPassword(auth, email, password);
+      const user = userCredential.user;
+      Alert.alert('Success', `Welcome back, ${user.email}`);
+      navigation.navigate('Home');
+    } catch (error) {
+      console.error('Error logging in:', error.message);
+      Alert.alert('Error', error.message);
+    }
+  };
+
   return (
     <View style={styles.container}>
-      {/* Bucky Logo*/}
-      <Image 
-        source={require('../assets/bucky.png')} 
-        style={styles.logo}
-      />
-
+      <Image source={require('../assets/bucky.png')} style={styles.logo} />
       <Text style={styles.title}>Bucky Exchange</Text>
-
       <Text style={styles.loginText}>Login</Text>
 
-      {/* Email Input -> need to implement storing this in database */}
       <View style={styles.inputContainer}>
         <Icon name="email-outline" size={24} color="#666" style={styles.icon} />
         <TextInput
@@ -38,7 +43,6 @@ const LoginScreen = ({ navigation }) => {
         />
       </View>
 
-      {/* Password Input -> need to implement storing this in database */}
       <View style={styles.inputContainer}>
         <Icon name="lock-outline" size={24} color="#666" style={styles.icon} />
         <TextInput
@@ -51,19 +55,15 @@ const LoginScreen = ({ navigation }) => {
         />
       </View>
 
-      {/* Login Button -> navigate to home page upon logging in*/}
-      <TouchableOpacity 
-  style={styles.loginButton} 
-  onPress={() => navigation.navigate('Home')}
->
-  <Text style={styles.loginButtonText}>Login</Text>
-</TouchableOpacity>
+      <TouchableOpacity style={styles.loginButton} onPress={handleLogin}>
+        <Text style={styles.loginButtonText}>Login</Text>
+      </TouchableOpacity>
 
-      {/* Register Link */}
       <Text style={styles.newHereText}>New Here?</Text>
-      <TouchableOpacity 
-        style={styles.registerButton} 
-        onPress={() => navigation.navigate('Register')}>
+      <TouchableOpacity
+        style={styles.registerButton}
+        onPress={() => navigation.navigate('Register')}
+      >
         <Text style={styles.registerButtonText}>Register Here</Text>
       </TouchableOpacity>
     </View>
@@ -73,7 +73,7 @@ const LoginScreen = ({ navigation }) => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#C8102E', // Wisconsin Red Background Color
+    backgroundColor: '#C8102E',
     alignItems: 'center',
     justifyContent: 'center',
   },
