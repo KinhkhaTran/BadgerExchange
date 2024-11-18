@@ -11,11 +11,53 @@ import {
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 
 const HomeScreen = ({ navigation }) => {
-  const placeholderItems = [{ id: '1' }, { id: '2' }, { id: '3' }];
+  // Data arrays for each section
+  const popularEvents = [
+    { id: '1', image: require('../assets/UWfootball.png'), title: 'Football Game', date: 'Nov 20, 2024' },
+    { id: '2', image: require('../assets/UWBasketball.png'), title: 'Basketball Game', date: 'Nov 22, 2024' },
+    { id: '3', image: require('../assets/UWVolleyball.png'), title: 'Volleyball Match', date: 'Nov 25, 2024' },
+  ];
 
-  const renderItem = () => (
+  const popularBooks = [
+    { id: '1', image: require('../assets/TheBookOfC.png'), title: 'The Book of C', date: 'Released: 2023' },
+    { id: '2', image: require('../assets/TheBookOfC.png'), title: 'The Book of Python', date: 'Released: 2022' },
+    { id: '3', image: require('../assets/TheBookOfC.png'), title: 'The Book of Java', date: 'Released: 2024' },
+];
+
+  const upcomingEvents = [
+    { id: '1', image: require('../assets/UWfootball.png'), title: 'Football Game', date: 'Nov 20, 2024' },
+    { id: '2', image: require('../assets/UWBasketball.png'), title: 'Basketball Game', date: 'Nov 22, 2024' },
+    { id: '3', image: require('../assets/UWVolleyball.png'), title: 'Volleyball Match', date: 'Nov 25, 2024' },
+  ];
+
+  // Separate renderItem functions for each section
+  const renderEventItem = ({ item }) => (
     <TouchableOpacity style={styles.itemBox}>
-      <Text>Placeholder Item</Text>
+      <Image source={item.image} style={styles.itemImage} />
+      <View style={styles.overlay}>
+        <Text style={styles.itemTitle}>{item.title}</Text>
+        <Text style={styles.itemDate}>{item.date}</Text>
+    </View>
+    </TouchableOpacity>
+  );
+
+  const renderBookItem = ({ item }) => (
+    <TouchableOpacity style={styles.itemBox}>
+      <Image source={item.image} style={styles.itemImage} />
+      <View style={styles.overlay}>
+        <Text style={styles.itemTitle}>{item.title}</Text>
+        <Text style={styles.itemDate}>{item.date}</Text>
+    </View>
+    </TouchableOpacity>
+  );
+
+  const renderUpcomingItem = ({ item }) => (
+    <TouchableOpacity style={styles.itemBox}>
+      <Image source={item.image} style={styles.itemImage} />
+      <View style={styles.overlay}>
+        <Text style={styles.itemTitle}>{item.title}</Text>
+        <Text style={styles.itemDate}>{item.date}</Text>
+    </View>
     </TouchableOpacity>
   );
 
@@ -42,8 +84,8 @@ const HomeScreen = ({ navigation }) => {
       <Text style={styles.sectionTitle}>Popular Events</Text>
       <FlatList
         horizontal
-        data={placeholderItems} // temporary placeholder, need to implement (possibly by most viewed games)
-        renderItem={renderItem}
+        data={popularEvents} // temporary placeholder, need to implement (possibly by most viewed games)
+        renderItem={renderEventItem}
         keyExtractor={(item) => item.id}
         contentContainerStyle={styles.sectionContainer}
       />
@@ -51,8 +93,8 @@ const HomeScreen = ({ navigation }) => {
       <Text style={styles.sectionTitle}>Popular Books</Text>
       <FlatList
         horizontal
-        data={placeholderItems}  // temporary placeholder, need to implement (possibly by most viewed books)
-        renderItem={renderItem}
+        data={popularBooks}  // temporary placeholder, need to implement (possibly by most viewed books)
+        renderItem={renderBookItem}
         keyExtractor={(item) => item.id}
         contentContainerStyle={styles.sectionContainer}
       />
@@ -61,8 +103,8 @@ const HomeScreen = ({ navigation }) => {
       <Text style={styles.sectionTitle}>Upcoming Events</Text>
       <FlatList
         horizontal
-        data={placeholderItems}
-        renderItem={renderItem}
+        data={upcomingEvents}
+        renderItem={renderUpcomingItem}
         keyExtractor={(item) => item.id}
         contentContainerStyle={styles.sectionContainer}
       />
@@ -134,8 +176,8 @@ const styles = StyleSheet.create({
     marginBottom: 20,
   },
   itemBox: {
-    width: 150,
-    height: 80,
+    width: 250,
+    height: 150,
     backgroundColor: '#fff',
     borderRadius: 10,
     justifyContent: 'center',
@@ -159,6 +201,33 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
     marginTop: -30, 
+  },
+  itemImage: {
+    width: '100%',
+    height: '100%',
+    borderRadius: 8, // Optional, for rounded corners
+  },
+  overlay: {
+    position: 'absolute',
+    bottom: 0,
+    width: '100%',
+    height: '25%', // Covers the bottom quarter of the image
+    backgroundColor: 'rgba(0, 0, 0, 0.6)', // Transparent black
+    justifyContent: 'center',
+    alignItems: 'center',
+    borderBottomLeftRadius: 8, // Matches the itemImage border radius
+    borderBottomRightRadius: 8, // Matches the itemImage border radius
+  },
+  itemTitle: {
+    color: '#fff',
+    fontSize: 16,
+    fontWeight: 'bold',
+    textAlign: 'center',
+  },
+  itemDate: {
+    color: '#fff',
+    fontSize: 14,
+    textAlign: 'center',
   },
 });
 
