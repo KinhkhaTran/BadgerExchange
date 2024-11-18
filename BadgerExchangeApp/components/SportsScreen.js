@@ -69,7 +69,9 @@ const SportsScreen = ({ navigation }) => {
         <TouchableOpacity onPress={() => navigation.navigate('Home')}>
           <Icon name="home-outline" size={30} color="#000" />
         </TouchableOpacity>
-        <Icon name="basketball" size={30} color="#000" />
+        <TouchableOpacity onPress={() => navigation.navigate('Sports')}>
+          <Icon name="basketball" size={30} color="#000" /> {/* Consistent sports icon */}
+        </TouchableOpacity>
         <TouchableOpacity onPress={() => navigation.navigate('Create')} style={styles.addButton}>
           <Icon name="plus" size={30} color="#fff" />
         </TouchableOpacity>
@@ -108,7 +110,7 @@ const styles = StyleSheet.create({
   sportButton: {
     flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: '#444',
+    backgroundColor: '#f2f2f2',
     borderRadius: 8,
     paddingVertical: 10,
     paddingHorizontal: 20,
@@ -116,9 +118,10 @@ const styles = StyleSheet.create({
   },
   sportIcon: {
     marginRight: 15,
+    color: '#444',
   },
   sportText: {
-    color: '#fff',
+    color: '#444',
     fontSize: 18,
   },
   bottomNav: {

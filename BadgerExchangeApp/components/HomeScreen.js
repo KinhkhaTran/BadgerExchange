@@ -109,16 +109,18 @@ const HomeScreen = ({ navigation }) => {
         contentContainerStyle={styles.sectionContainer}
       />
 
-      {/* Bottom Navigation for between various screens of app*/}
+      {/* Bottom Navigation */}
       <View style={styles.bottomNav}>
-        <Icon name="home-outline" size={30} color="#000" />
+        <TouchableOpacity onPress={() => navigation.navigate('Home')}>
+          <Icon name="home-outline" size={30} color="#000" />
+        </TouchableOpacity>
         <TouchableOpacity onPress={() => navigation.navigate('Sports')}>
-          <Icon name="basketball" size={30} color="#000" />
+          <Icon name="basketball" size={30} color="#000" /> {/* Consistent sports icon */}
         </TouchableOpacity>
         <TouchableOpacity onPress={() => navigation.navigate('Create')} style={styles.addButton}>
           <Icon name="plus" size={30} color="#fff" />
         </TouchableOpacity>
-        <TouchableOpacity onPress={() => navigation.navigate('books')}>
+        <TouchableOpacity onPress={() => navigation.navigate('Books')}>
           <Icon name="book-outline" size={30} color="#000" />
         </TouchableOpacity>
         <TouchableOpacity onPress={() => navigation.navigate('Account')}>
