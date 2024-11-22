@@ -61,19 +61,19 @@ const MenBasketballScreen = ({ navigation }) => {
       {/* Bottom Navigation */}
       <View style={styles.bottomNavigation}>
         <TouchableOpacity onPress={() => navigation.navigate('Home')}>
-          <Icon name="home-outline" size={24} color="#000" />
+          <Icon name="home-outline" size={30} color="#000" />
         </TouchableOpacity>
         <TouchableOpacity onPress={() => navigation.navigate('Sports')}>
-          <Icon name="basketball" size={24} color="#000" /> {/* Consistent sports icon */}
+          <Icon name="basketball" size={30} color="#000" /> {/* Consistent sports icon */}
         </TouchableOpacity>
         <TouchableOpacity onPress={() => navigation.navigate('Create')} style={styles.addButton}>
-          <Icon name="plus" size={24} color="#fff" />
+          <Icon name="plus" size={30} color="#fff" />
         </TouchableOpacity>
         <TouchableOpacity onPress={() => navigation.navigate('Books')}>
-          <Icon name="book-outline" size={24} color="#000" />
+          <Icon name="book-outline" size={30} color="#000" />
         </TouchableOpacity>
         <TouchableOpacity onPress={() => navigation.navigate('Account')}>
-          <Icon name="account-outline" size={24} color="#000" />
+          <Icon name="account-outline" size={30} color="#000" />
         </TouchableOpacity>
       </View>
     </View>

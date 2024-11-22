@@ -45,7 +45,7 @@ const App = () => {
           options={{ headerShown: false }} 
         />
          <Stack.Screen 
-          name="books" 
+          name="Books" 
           component={TextbookScreen} 
           options={{ headerShown: false }} 
         />

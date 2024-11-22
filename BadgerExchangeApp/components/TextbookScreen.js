@@ -42,13 +42,13 @@ const TextbookScreen = ({ navigation }) => {
         contentContainerStyle={styles.listContainer}
       />
 
-      {/* Bottom Navigation Bar */}
-      <View style={styles.bottomNav}>
+     {/* Bottom Navigation */}
+     <View style={styles.bottomNav}>
         <TouchableOpacity onPress={() => navigation.navigate('Home')}>
           <Icon name="home-outline" size={30} color="#000" />
         </TouchableOpacity>
         <TouchableOpacity onPress={() => navigation.navigate('Sports')}>
-          <Icon name="basketball" size={30} color="#000" />
+          <Icon name="basketball" size={30} color="#000" /> {/* Consistent sports icon */}
         </TouchableOpacity>
         <TouchableOpacity onPress={() => navigation.navigate('Create')} style={styles.addButton}>
           <Icon name="plus" size={30} color="#fff" />
