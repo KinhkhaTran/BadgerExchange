@@ -17,6 +17,7 @@ import MenHockeyScreen from './components/MenHockeyScreen';
 import MenBasketballScreen from './components/MenBasketballScreen';
 import VolleyballScreen from './components/VolleyballScreen';
 import WomenBasketballScreen from './components/WomenBasketballScreen';
+import VerifyEmailScreen from './components/VerifyEmailScreen'
 const Stack = createStackNavigator();
 
 const App = () => {
@@ -99,6 +100,11 @@ const App = () => {
           options={{ headerShown: false }} 
         />
         <Stack.Screen name="Register" component={RegisterScreen} />
+        <Stack.Screen 
+          name="VerifyEmailScreen" 
+          component={VerifyEmailScreen} 
+          options={{ headerShown: false }} 
+        />
       </Stack.Navigator>
     </NavigationContainer>
   );

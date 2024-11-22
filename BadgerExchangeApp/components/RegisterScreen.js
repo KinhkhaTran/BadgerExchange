@@ -26,10 +26,20 @@ const RegisterScreen = ({ navigation }) => {
       return;
     }
 
+    const isWiscEmail = (email) => {
+      const regex = /^[a-zA-Z0-9._%+-]+@wisc\.edu$/;
+      return regex.test(email);
+    };
+
+    if(!isWiscEmail(email)) {
+      Alert.alert('Error', 'Must be a valid @Wisc email!');
+      return;
+    }
+
     try {
       const userCredential = await createUserWithEmailAndPassword(auth, email, password);
       const user = userCredential.user;
-
+    
       await setDoc(doc(db, 'users', user.uid), {
         name: name,
         email: email,
@@ -37,8 +47,13 @@ const RegisterScreen = ({ navigation }) => {
         createdAt: new Date(), 
       });
 
-      Alert.alert('Success', 'Registration successful');
-      navigation.navigate('Login'); 
+      if(user.emailVerified) {
+        navigation.navigate('Home'); 
+      } else {
+        navigation.navigate('VerifyEmailScreen');
+      }
+
+      // navigation.navigate('Login'); 
     } catch (error) {
       console.error('Error registering user:', error.message);
       Alert.alert('Error', error.message);
