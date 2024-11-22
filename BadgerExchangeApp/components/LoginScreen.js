@@ -17,8 +17,12 @@ const LoginScreen = ({ navigation }) => {
     try {
       const userCredential = await signInWithEmailAndPassword(auth, email, password);
       const user = userCredential.user;
-      Alert.alert('Success', `Welcome back, ${user.email}`);
-      navigation.navigate('Home');
+      if(user.emailVerified) {
+        Alert.alert('Success', `Welcome back, ${user.email}`);
+        navigation.navigate('Home');
+      } else {
+        navigation.navigate('VerifyEmailScreen');
+      }
     } catch (error) {
       console.error('Error logging in:', error.message);
       Alert.alert('Error', error.message);
