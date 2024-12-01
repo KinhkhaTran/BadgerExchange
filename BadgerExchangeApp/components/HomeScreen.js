@@ -32,32 +32,41 @@ const HomeScreen = ({ navigation }) => {
 
   // Separate renderItem functions for each section
   const renderEventItem = ({ item }) => (
-    <TouchableOpacity style={styles.itemBox}>
+    <TouchableOpacity
+      style={styles.itemBox}
+      onPress={() => navigation.navigate('EventDetails', { eventId: item.id, eventTitle: item.title })}
+    >
       <Image source={item.image} style={styles.itemImage} />
       <View style={styles.overlay}>
         <Text style={styles.itemTitle}>{item.title}</Text>
         <Text style={styles.itemDate}>{item.date}</Text>
-    </View>
+      </View>
     </TouchableOpacity>
   );
 
   const renderBookItem = ({ item }) => (
-    <TouchableOpacity style={styles.itemBox}>
-      <Image source={item.image} style={styles.itemImage} />
+    <TouchableOpacity
+      style={styles.itemBox}
+      onPress={() => navigation.navigate('BookDetails', { bookId: item.id, bookTitle: item.title })}
+    >
+    <Image source={item.image} style={styles.itemImage} />
       <View style={styles.overlay}>
         <Text style={styles.itemTitle}>{item.title}</Text>
         <Text style={styles.itemDate}>{item.date}</Text>
-    </View>
+      </View>
     </TouchableOpacity>
   );
 
   const renderUpcomingItem = ({ item }) => (
-    <TouchableOpacity style={styles.itemBox}>
+    <TouchableOpacity
+      style={styles.itemBox}
+      onPress={() => navigation.navigate('EventDetails', { eventId: item.id, eventTitle: item.title })}
+    >
       <Image source={item.image} style={styles.itemImage} />
       <View style={styles.overlay}>
         <Text style={styles.itemTitle}>{item.title}</Text>
         <Text style={styles.itemDate}>{item.date}</Text>
-    </View>
+      </View>
     </TouchableOpacity>
   );
 

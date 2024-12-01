@@ -18,6 +18,8 @@ import MenBasketballScreen from './components/MenBasketballScreen';
 import VolleyballScreen from './components/VolleyballScreen';
 import WomenBasketballScreen from './components/WomenBasketballScreen';
 import VerifyEmailScreen from './components/VerifyEmailScreen'
+import EventDetailsScreen from './components/EventDetailsScreen';
+import BookDetailsScreen from './components/BookDetailsScreen';
 const Stack = createStackNavigator();
 
 const App = () => {
@@ -103,6 +105,16 @@ const App = () => {
         <Stack.Screen 
           name="VerifyEmailScreen" 
           component={VerifyEmailScreen} 
+          options={{ headerShown: false }} 
+        />
+        <Stack.Screen 
+          name="EventDetails" 
+          component={EventDetailsScreen} 
+          options={{ headerShown: false }} 
+        />
+        <Stack.Screen 
+          name="BookDetails" 
+          component={BookDetailsScreen} 
           options={{ headerShown: false }} 
         />
       </Stack.Navigator>
