@@ -13,54 +13,64 @@ import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 const HomeScreen = ({ navigation }) => {
   // Data arrays for each section
   const popularEvents = [
-    { id: '1', image: require('../assets/UWfootball.png'), title: 'Football Game', date: 'Nov 20, 2024' },
-    { id: '2', image: require('../assets/UWBasketball.png'), title: 'Basketball Game', date: 'Nov 22, 2024' },
-    { id: '3', image: require('../assets/UWVolleyball.png'), title: 'Volleyball Match', date: 'Nov 25, 2024' },
+    {
+      id: '1',
+      image: require('../assets/UWfootball.png'),
+      title: 'Football Game',
+      date: 'Nov 20, 2024',
+    },
+    {
+      id: '2',
+      image: require('../assets/UWBasketball.png'),
+      title: 'Basketball Game',
+      date: 'Nov 22, 2024',
+    },
+    {
+      id: '3',
+      image: require('../assets/UWVolleyball.png'),
+      title: 'Volleyball Match',
+      date: 'Nov 25, 2024',
+    },
   ];
 
   const popularBooks = [
-    { id: '1', image: require('../assets/TheBookOfC.png'), title: 'The Book of C', date: 'Released: 2023' },
-    { id: '2', image: require('../assets/TheBookOfC.png'), title: 'The Book of Python', date: 'Released: 2022' },
-    { id: '3', image: require('../assets/TheBookOfC.png'), title: 'The Book of Java', date: 'Released: 2024' },
-];
-
-  const upcomingEvents = [
-    { id: '1', image: require('../assets/UWfootball.png'), title: 'Football Game', date: 'Nov 20, 2024' },
-    { id: '2', image: require('../assets/UWBasketball.png'), title: 'Basketball Game', date: 'Nov 22, 2024' },
-    { id: '3', image: require('../assets/UWVolleyball.png'), title: 'Volleyball Match', date: 'Nov 25, 2024' },
+    {
+      id: '1',
+      image: require('../assets/TheBookOfC.png'),
+      title: 'The Book of C',
+      date: 'Released: 2023',
+    },
+    {
+      id: '2',
+      image: require('../assets/TheBookOfC.png'),
+      title: 'The Book of Python',
+      date: 'Released: 2022',
+    },
+    {
+      id: '3',
+      image: require('../assets/TheBookOfC.png'),
+      title: 'The Book of Java',
+      date: 'Released: 2024',
+    },
   ];
 
-  // Separate renderItem functions for each section
-  const renderEventItem = ({ item }) => (
-    <TouchableOpacity
-      style={styles.itemBox}
-      onPress={() => navigation.navigate('EventDetails', { eventId: item.id, eventTitle: item.title })}
-    >
-      <Image source={item.image} style={styles.itemImage} />
-      <View style={styles.overlay}>
-        <Text style={styles.itemTitle}>{item.title}</Text>
-        <Text style={styles.itemDate}>{item.date}</Text>
-      </View>
-    </TouchableOpacity>
-  );
+  const upcomingEvents = [...popularEvents]; // Reusing for simplicity in this example
 
-  const renderBookItem = ({ item }) => (
+  const renderItem = (item, type) => (
     <TouchableOpacity
       style={styles.itemBox}
-      onPress={() => navigation.navigate('BookDetails', { bookId: item.id, bookTitle: item.title })}
-    >
-    <Image source={item.image} style={styles.itemImage} />
-      <View style={styles.overlay}>
-        <Text style={styles.itemTitle}>{item.title}</Text>
-        <Text style={styles.itemDate}>{item.date}</Text>
-      </View>
-    </TouchableOpacity>
-  );
-
-  const renderUpcomingItem = ({ item }) => (
-    <TouchableOpacity
-      style={styles.itemBox}
-      onPress={() => navigation.navigate('EventDetails', { eventId: item.id, eventTitle: item.title })}
+      onPress={() =>
+        navigation.navigate(
+          type === 'event' ? 'EventDetails' : 'BookDetails',
+          {
+            id: item.id,
+            title: item.title,
+            date: item.date,
+            description: type === 'event' ? 'This is an event description.' : 'This is a book description.',
+            image: item.image,
+          }
+        )
+      }
     >
       <Image source={item.image} style={styles.itemImage} />
       <View style={styles.overlay}>
@@ -72,29 +82,31 @@ const HomeScreen = ({ navigation }) => {
 
   return (
     <View style={styles.container}>
+      {/* Header */}
       <View style={styles.header}>
         <Text style={styles.title}>Bucky Exchange</Text>
-        {/* Make the bell icon clickable to navigate to FeedScreen */}
         <TouchableOpacity onPress={() => navigation.navigate('Feed')}>
           <Icon name="bell-outline" size={30} color="#fff" />
         </TouchableOpacity>
       </View>
 
+      {/* Search Bar */}
       <View style={styles.searchContainer}>
         <Icon name="menu" size={24} color="#666" style={styles.menuIcon} />
         <TextInput
-          placeholder="Hinted search text" // will need to determine functionality for the search
+          placeholder="Search events or books"
           placeholderTextColor="#aaa"
           style={styles.searchInput}
         />
         <Icon name="magnify" size={24} color="#666" />
       </View>
 
+      {/* Sections */}
       <Text style={styles.sectionTitle}>Popular Events</Text>
       <FlatList
         horizontal
-        data={popularEvents} // temporary placeholder, need to implement (possibly by most viewed games)
-        renderItem={renderEventItem}
+        data={popularEvents}
+        renderItem={({ item }) => renderItem(item, 'event')}
         keyExtractor={(item) => item.id}
         contentContainerStyle={styles.sectionContainer}
       />
@@ -102,18 +114,17 @@ const HomeScreen = ({ navigation }) => {
       <Text style={styles.sectionTitle}>Popular Books</Text>
       <FlatList
         horizontal
-        data={popularBooks}  // temporary placeholder, need to implement (possibly by most viewed books)
-        renderItem={renderBookItem}
+        data={popularBooks}
+        renderItem={({ item }) => renderItem(item, 'book')}
         keyExtractor={(item) => item.id}
         contentContainerStyle={styles.sectionContainer}
       />
 
-      {/* Section: Upcoming Events (to view upcoming games - across sports? */}
       <Text style={styles.sectionTitle}>Upcoming Events</Text>
       <FlatList
         horizontal
         data={upcomingEvents}
-        renderItem={renderUpcomingItem}
+        renderItem={({ item }) => renderItem(item, 'event')}
         keyExtractor={(item) => item.id}
         contentContainerStyle={styles.sectionContainer}
       />
@@ -124,7 +135,7 @@ const HomeScreen = ({ navigation }) => {
           <Icon name="home-outline" size={30} color="#000" />
         </TouchableOpacity>
         <TouchableOpacity onPress={() => navigation.navigate('Sports')}>
-          <Icon name="basketball" size={30} color="#000" /> {/* Consistent sports icon */}
+          <Icon name="basketball" size={30} color="#000" />
         </TouchableOpacity>
         <TouchableOpacity onPress={() => navigation.navigate('Create')} style={styles.addButton}>
           <Icon name="plus" size={30} color="#fff" />
@@ -143,7 +154,7 @@ const HomeScreen = ({ navigation }) => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#C8102E', // Red background for Badger Colors
+    backgroundColor: '#C8102E', // Badger Red
     paddingTop: 40,
   },
   header: {
@@ -211,7 +222,7 @@ const styles = StyleSheet.create({
     backgroundColor: '#4CAF50',
     justifyContent: 'center',
     alignItems: 'center',
-    marginTop: -30, 
+    marginTop: -30,
   },
   itemImage: {
     width: '100%',
@@ -222,12 +233,12 @@ const styles = StyleSheet.create({
     position: 'absolute',
     bottom: 0,
     width: '100%',
-    height: '25%', // Covers the bottom quarter of the image
+    height: '25%',
     backgroundColor: 'rgba(0, 0, 0, 0.6)', // Transparent black
     justifyContent: 'center',
     alignItems: 'center',
-    borderBottomLeftRadius: 8, // Matches the itemImage border radius
-    borderBottomRightRadius: 8, // Matches the itemImage border radius
+    borderBottomLeftRadius: 8,
+    borderBottomRightRadius: 8,
   },
   itemTitle: {
     color: '#fff',
