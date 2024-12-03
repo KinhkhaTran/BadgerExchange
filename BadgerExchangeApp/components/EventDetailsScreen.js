@@ -3,7 +3,7 @@ import { View, Text, Image, StyleSheet, TouchableOpacity } from 'react-native';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 
 const EventDetailsScreen = ({ navigation, route }) => {
-  const { id, title, date, description, image } = route.params;
+  const { id, title, date, description1, description2, image, cost } = route.params;
 
   return (
     <View style={styles.container}>
@@ -21,7 +21,10 @@ const EventDetailsScreen = ({ navigation, route }) => {
       <View style={styles.detailsContainer}>
         <Text style={styles.eventTitle}>{title}</Text>
         <Text style={styles.eventDate}>{date}</Text>
-        <Text style={styles.eventDescription}>{description}</Text>
+        <Text style={styles.eventCost}>Cost: {cost}</Text>
+        
+        <Text style={styles.eventDescription}>{description1}</Text>
+        <Text style={styles.eventDescription}>{description2}</Text>
       </View>
     </View>
   );
@@ -80,12 +83,19 @@ const styles = StyleSheet.create({
   eventDate: {
     fontSize: 16,
     color: '#555',
+    marginBottom: 10,
+  },
+  eventCost: {
+    fontSize: 16,
+    color: '#555',
+    fontWeight: 'bold',
     marginBottom: 20,
   },
   eventDescription: {
     fontSize: 16,
     color: '#666',
     lineHeight: 22,
+    marginBottom: 10,
   },
 });
 

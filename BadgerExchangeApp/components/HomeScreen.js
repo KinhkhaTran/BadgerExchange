@@ -11,50 +11,55 @@ import {
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 
 const HomeScreen = ({ navigation }) => {
-  // Data arrays for each section
   const popularEvents = [
     {
       id: '1',
       image: require('../assets/UWfootball.png'),
       title: 'Football Game',
       date: 'Nov 20, 2024',
+      description: 'Join us for an exhilarating football game! Cheer for your favorite team at the Husky Stadium.',
     },
     {
       id: '2',
       image: require('../assets/UWBasketball.png'),
       title: 'Basketball Game',
       date: 'Nov 22, 2024',
+      description: 'Experience the excitement of live basketball as our team goes head-to-head with rivals!',
     },
     {
       id: '3',
       image: require('../assets/UWVolleyball.png'),
       title: 'Volleyball Match',
       date: 'Nov 25, 2024',
+      description: 'Catch the thrilling volleyball match! Witness top-notch skills and intense competition.',
     },
   ];
-
+  
   const popularBooks = [
     {
       id: '1',
       image: require('../assets/TheBookOfC.png'),
       title: 'The Book of C',
       date: 'Released: 2023',
+      description: 'Master the C programming language with this comprehensive guide for beginners and experts alike.',
     },
     {
       id: '2',
       image: require('../assets/TheBookOfC.png'),
       title: 'The Book of Python',
       date: 'Released: 2022',
+      description: 'Dive into Python programming! This book covers everything from basic syntax to advanced techniques.',
     },
     {
       id: '3',
       image: require('../assets/TheBookOfC.png'),
       title: 'The Book of Java',
       date: 'Released: 2024',
+      description: 'Learn Java from scratch! Perfect for aspiring developers and seasoned coders seeking to refine their skills.',
     },
   ];
 
-  const upcomingEvents = [...popularEvents]; // Reusing for simplicity in this example
+  const upcomingEvents = [...popularEvents];
 
   const renderItem = (item, type) => (
     <TouchableOpacity
@@ -82,7 +87,6 @@ const HomeScreen = ({ navigation }) => {
 
   return (
     <View style={styles.container}>
-      {/* Header */}
       <View style={styles.header}>
         <Text style={styles.title}>Bucky Exchange</Text>
         <TouchableOpacity onPress={() => navigation.navigate('Feed')}>
@@ -90,7 +94,6 @@ const HomeScreen = ({ navigation }) => {
         </TouchableOpacity>
       </View>
 
-      {/* Search Bar */}
       <View style={styles.searchContainer}>
         <Icon name="menu" size={24} color="#666" style={styles.menuIcon} />
         <TextInput
@@ -101,13 +104,12 @@ const HomeScreen = ({ navigation }) => {
         <Icon name="magnify" size={24} color="#666" />
       </View>
 
-      {/* Sections */}
       <Text style={styles.sectionTitle}>Popular Events</Text>
       <FlatList
         horizontal
         data={popularEvents}
         renderItem={({ item }) => renderItem(item, 'event')}
-        keyExtractor={(item) => item.id}
+        keyExtractor={(item) => `event-${item.id}`}
         contentContainerStyle={styles.sectionContainer}
       />
 
@@ -116,7 +118,7 @@ const HomeScreen = ({ navigation }) => {
         horizontal
         data={popularBooks}
         renderItem={({ item }) => renderItem(item, 'book')}
-        keyExtractor={(item) => item.id}
+        keyExtractor={(item) => `book-${item.id}`}
         contentContainerStyle={styles.sectionContainer}
       />
 
@@ -125,11 +127,10 @@ const HomeScreen = ({ navigation }) => {
         horizontal
         data={upcomingEvents}
         renderItem={({ item }) => renderItem(item, 'event')}
-        keyExtractor={(item) => item.id}
+        keyExtractor={(item) => `upcoming-${item.id}`}
         contentContainerStyle={styles.sectionContainer}
       />
 
-      {/* Bottom Navigation */}
       <View style={styles.bottomNav}>
         <TouchableOpacity onPress={() => navigation.navigate('Home')}>
           <Icon name="home-outline" size={30} color="#000" />
@@ -154,7 +155,7 @@ const HomeScreen = ({ navigation }) => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#C8102E', // Badger Red
+    backgroundColor: '#C8102E',
     paddingTop: 40,
   },
   header: {
@@ -202,9 +203,31 @@ const styles = StyleSheet.create({
     height: 150,
     backgroundColor: '#fff',
     borderRadius: 10,
+    overflow: 'hidden',
+    marginRight: 10,
+  },
+  itemImage: {
+    width: '100%',
+    height: '100%',
+  },
+  overlay: {
+    position: 'absolute',
+    bottom: 0,
+    width: '100%',
+    height: 40,
+    backgroundColor: 'rgba(0, 0, 0, 0.6)',
     justifyContent: 'center',
     alignItems: 'center',
-    marginRight: 10,
+    paddingHorizontal: 5,
+  },
+  itemTitle: {
+    color: '#fff',
+    fontSize: 16,
+    fontWeight: 'bold',
+  },
+  itemDate: {
+    color: '#fff',
+    fontSize: 12,
   },
   bottomNav: {
     flexDirection: 'row',
@@ -223,33 +246,6 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
     marginTop: -30,
-  },
-  itemImage: {
-    width: '100%',
-    height: '100%',
-    borderRadius: 8, // Optional, for rounded corners
-  },
-  overlay: {
-    position: 'absolute',
-    bottom: 0,
-    width: '100%',
-    height: '25%',
-    backgroundColor: 'rgba(0, 0, 0, 0.6)', // Transparent black
-    justifyContent: 'center',
-    alignItems: 'center',
-    borderBottomLeftRadius: 8,
-    borderBottomRightRadius: 8,
-  },
-  itemTitle: {
-    color: '#fff',
-    fontSize: 16,
-    fontWeight: 'bold',
-    textAlign: 'center',
-  },
-  itemDate: {
-    color: '#fff',
-    fontSize: 14,
-    textAlign: 'center',
   },
 });
 
