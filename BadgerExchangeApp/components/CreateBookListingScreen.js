@@ -1,148 +1,97 @@
 import React, { useState } from 'react';
-import {
-  View,
-  Text,
-  TextInput,
-  TouchableOpacity,
-  StyleSheet,
-} from 'react-native';
-import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
+import { View, Text, TextInput, TouchableOpacity, StyleSheet, Alert } from 'react-native';
+import { db } from './firebaseConfig';
+import { collection, addDoc } from 'firebase/firestore';
 
-const CreateBookListingScreen = ({ navigation }) => {
+const CreateBookListingScreen = ({ route, navigation }) => {
+  const addBookToList = route?.params?.addBookToList || (() => {}); // Fallback if not passed
 
-    const [course, setCourse] = useState('');
-    const [bookTitle, setBookTitle] = useState('');
-    const [price, setPrice] = useState('');
-  
-    return (
-      <View style={styles.container}>
-        <View style={styles.header}>
-            <Text style={styles.title}>BuckyExchange</Text>
-            <TouchableOpacity onPress={() => navigation.navigate('Feed')}>
-                <Icon name="bell-outline" size={30} color="#fff" />
-            </TouchableOpacity>
-        </View>
+  const [course, setCourse] = useState('');
+  const [bookTitle, setBookTitle] = useState('');
+  const [price, setPrice] = useState('');
 
-         {/* Back Button */}
-         <TouchableOpacity onPress={() => navigation.goBack()}>
-          <Icon name="arrow-left" size={30} color="#fff" />
-        </TouchableOpacity>
-        <Text style={styles.sectionTitle}>Create Book Listing</Text>
-  
-        {/* Information Input -> need to implement storing this in database */}
-        <Text style={styles.inputTitles}>Course Name</Text>
-        <View style={styles.inputContainer}>
-          <TextInput
-            style={styles.input}
-            placeholder="Course (ex: CS 407)"
-            placeholderTextColor="#aaa"
-            value={course}
-            onChangeText={setCourse}
-            keyboardType="text"
-          />
-        </View>
-  
-        <Text style={styles.inputTitles}>Book Title</Text>
-        <View style={styles.inputContainer}>
-          <TextInput
-            style={styles.input}
-            placeholder="Title (ex: Introduction to Mobile Applications)"
-            placeholderTextColor="#aaa"
-            value={bookTitle}
-            keyboardType="text"
-            onChangeText={setBookTitle}
-          />
-        </View>
+  const handleCreateListing = async () => {
+    if (!course || !bookTitle || !price) {
+      Alert.alert('Error', 'Please fill in all fields.');
+      return;
+    }
 
-        <Text style={styles.inputTitles}>Price</Text>
-        <View style={styles.inputContainer}>
-          <TextInput
-            style={styles.input}
-            placeholder="Price"
-            placeholderTextColor="#aaa"
-            value={price}
-            keyboardType="numeric"
-            onChangeText={setPrice}
-          />
-        </View>
+    try {
+      const newBook = {
+        course,
+        bookTitle,
+        price: parseFloat(price),
+        createdAt: new Date(),
+      };
 
-        {/* Login Button -> navigate to home page upon logging in*/}
-        <TouchableOpacity style={styles.createButton} onPress={() => navigation.navigate('Account')}>
-            <Text style={styles.createButtonText}>Create</Text>
-        </TouchableOpacity>
-      </View>
-    );
+      const docRef = await addDoc(collection(db, 'bookListings'), newBook);
+      addBookToList({ ...newBook, id: docRef.id }); // Add to the list dynamically
+      Alert.alert('Success', 'Book listing created successfully!');
+      navigation.goBack();
+    } catch (error) {
+      console.error('Error creating listing:', error.message);
+      Alert.alert('Error', 'An error occurred while creating the listing. Please try again.');
+    }
+  };
+
+  return (
+    <View style={styles.container}>
+      <Text style={styles.title}>Create Book Listing</Text>
+      <TextInput
+        style={styles.input}
+        placeholder="Course (e.g., CS 407)"
+        value={course}
+        onChangeText={setCourse}
+      />
+      <TextInput
+        style={styles.input}
+        placeholder="Book Title"
+        value={bookTitle}
+        onChangeText={setBookTitle}
+      />
+      <TextInput
+        style={styles.input}
+        placeholder="Price"
+        value={price}
+        onChangeText={setPrice}
+        keyboardType="numeric"
+      />
+      <TouchableOpacity style={styles.button} onPress={handleCreateListing}>
+        <Text style={styles.buttonText}>Create</Text>
+      </TouchableOpacity>
+    </View>
+  );
 };
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#C8102E', // default Wisconsin Red background color
-    paddingTop: 40,
-  },
-  header: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    paddingHorizontal: 20,
-    marginBottom: 20,
-  },
-  inputContainer: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    backgroundColor: '#fff',
-    borderRadius: 8,
-    marginBottom: 15,
-    width: '90%',
-    paddingHorizontal: 10,
-    marginLeft: 20,
+    backgroundColor: '#C8102E',
+    padding: 20,
   },
   title: {
     fontSize: 28,
     fontWeight: 'bold',
     color: '#fff',
+    marginBottom: 20,
   },
   input: {
-    flex: 1,
-    height: 40,
-    color: '#333',
-  },
-  sectionTitle: {
-    fontSize: 23,
-    fontWeight: 'bold',
-    color: '#fff',
-    marginLeft: 20,
-    marginBottom: 20,
-    textAlign: 'center',
-  },
-  inputTitles: {
-    fontSize: 23,
-    fontWeight: 'bold',
-    color: '#fff',
-    marginLeft: 20,
-    alignItems: 'center',
-  },
-  addButton: {
-    width: 60,
-    height: 60,
-    borderRadius: 30,
-    backgroundColor: '#4CAF50',
-    justifyContent: 'center',
-    alignItems: 'center',
-    marginTop: -30,
-  },
-  createButton: {
-    backgroundColor: '#666',
-    paddingVertical: 10,
-    width: '90%',
+    backgroundColor: '#fff',
+    padding: 10,
     borderRadius: 8,
-    marginTop: 10,
-    alignItems: 'center',
-    marginLeft: 20,
+    marginBottom: 15,
+    fontSize: 16,
   },
-  createButtonText: {
+  button: {
+    backgroundColor: '#4CAF50',
+    padding: 15,
+    borderRadius: 8,
+    alignItems: 'center',
+  },
+  buttonText: {
     color: '#fff',
-    fontSize: 18,
+    fontSize: 16,
+    fontWeight: 'bold',
   },
 });
 

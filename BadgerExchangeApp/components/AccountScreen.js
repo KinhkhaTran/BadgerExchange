@@ -1,34 +1,79 @@
-import React from 'react';
+import React, { useContext } from 'react';
 import { useNavigation } from '@react-navigation/native';
+import { CartContext } from '../components/CartContext';
 import {
   View,
   Text,
-  TextInput,
+  FlatList,
   TouchableOpacity,
   StyleSheet,
-  FlatList,
   Image,
+  TextInput,
+  Alert,
 } from 'react-native';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
+import { auth, db } from './firebaseConfig';
+import { doc, deleteDoc } from 'firebase/firestore';
+
 
 const AccountScreen = () => {
+  const { cart,removeFromCart } = useContext(CartContext);
   const navigation = useNavigation();
 
-  // Placeholder items for user-specific data
-  const placeholderItems = [{ id: '1' }, { id: '2' }, { id: '3' }];
-
-  const renderItem = () => (
-    <TouchableOpacity style={styles.itemBox}>
-      <Text>Placeholder Item</Text>
-    </TouchableOpacity>
-  );
-
-  // Logout handler
-  const handleLogout = () => {
-    console.log("User logged out"); // Replace with actual logout functionality
-    navigation.navigate('Login'); // Redirect to login screen if applicable
+  const handlePurchase = async (item) => {
+    try {
+      console.log(item.id);
+      await deleteDoc(doc(db, 'bookListings', item.id));
+  
+      removeFromCart(item.id);
+  
+      Alert.alert(
+        'Purchase Successful',
+        `You have purchased "${item.bookTitle}" for $${item.price}.`
+      );
+    } catch (error) {
+      console.error('Error removing item from Firebase:', error.message);
+      Alert.alert('Error', 'Could not complete the purchase. Please try again.');
+    }
   };
 
+  const renderCartItem = ({ item }) => (
+    <View style={styles.itemBox}>
+      <Text style={styles.itemTitle}>{item.bookTitle}</Text>
+      <Text style={styles.itemPrice}>${item.price}</Text>
+      <View style={styles.itemActions}>
+        <TouchableOpacity
+          style={styles.actionButton}
+          onPress={() => removeFromCart(item.id)}
+        >
+          <Text style={styles.removeButton}>Remove</Text>
+        </TouchableOpacity>
+        <TouchableOpacity
+          style={[styles.actionButton, styles.purchaseButton]}
+          onPress={() => handlePurchase(item)}
+        >
+          <Text style={styles.purchaseText}>Purchase</Text>
+        </TouchableOpacity>
+      </View>
+    </View>
+  );
+
+  const renderEventItem = ({ item }) => (
+    <View style={styles.eventBox}>
+      <Text style={styles.eventTitle}>Event/Book {item.id}</Text>
+      <TouchableOpacity
+        style={styles.actionButton}
+        onPress={() => Alert.alert('Details', `Details for item ${item.id}`)}
+      >
+        <Text style={styles.detailsButton}>View Details</Text>
+      </TouchableOpacity>
+    </View>
+  );
+
+  const handleLogout = () => {
+    console.log('User logged out');
+    navigation.navigate('Login');
+  };
   return (
     <View style={styles.container}>
       <View style={styles.header}>
@@ -48,10 +93,21 @@ const AccountScreen = () => {
         </View>
       </View>
 
+      <Text style={styles.sectionTitle}>My Cart</Text>
+      <FlatList
+        data={cart}
+        renderItem={renderCartItem}
+        keyExtractor={(item) => item.id}
+        contentContainerStyle={styles.sectionContainer}
+        ListEmptyComponent={
+          <Text style={styles.emptyText}>Your cart is empty.</Text>
+        }
+      />
+
       <View style={styles.searchContainer}>
         <Icon name="menu" size={24} color="#666" style={styles.menuIcon} />
         <TextInput
-          placeholder="Search your items" // Placeholder text
+          placeholder="Search your items"
           placeholderTextColor="#aaa"
           style={styles.searchInput}
         />
@@ -61,34 +117,22 @@ const AccountScreen = () => {
       <Text style={styles.sectionTitle}>My Events/Books</Text>
       <FlatList
         horizontal
-        data={placeholderItems}
-        renderItem={renderItem}
+        data={[{ id: '1' }, { id: '2' }, { id: '3' }]}
+        renderItem={renderCartItem}
         keyExtractor={(item) => item.id}
         contentContainerStyle={styles.sectionContainer}
       />
 
-      <Text style={styles.sectionTitle}>My Cart</Text>
-      <FlatList
-        horizontal
-        data={placeholderItems}
-        renderItem={renderItem}
-        keyExtractor={(item) => item.id}
-        contentContainerStyle={styles.sectionContainer}
-      />
-
-      {/* Logout Button */}
       <TouchableOpacity style={styles.logoutButton} onPress={handleLogout}>
         <Text style={styles.logoutButtonText}>Logout</Text>
       </TouchableOpacity>
 
-
-      {/* Bottom Navigation */}
       <View style={styles.bottomNav}>
         <TouchableOpacity onPress={() => navigation.navigate('Home')}>
           <Icon name="home-outline" size={30} color="#000" />
         </TouchableOpacity>
         <TouchableOpacity onPress={() => navigation.navigate('Sports')}>
-          <Icon name="basketball" size={30} color="#000" /> {/* Consistent sports icon */}
+          <Icon name="basketball" size={30} color="#000" />
         </TouchableOpacity>
         <TouchableOpacity onPress={() => navigation.navigate('Create')} style={styles.addButton}>
           <Icon name="plus" size={30} color="#fff" />

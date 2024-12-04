@@ -1,57 +1,117 @@
-import React from 'react';
-import { View, Text, TextInput, TouchableOpacity, StyleSheet, FlatList, Image } from 'react-native';
+import React, { useState, useEffect } from 'react';
+import { View, Text, TextInput, TouchableOpacity, StyleSheet, SectionList, Alert } from 'react-native';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
+import { db } from './firebaseConfig';
+import { collection, onSnapshot } from 'firebase/firestore';
 
 const TextbookScreen = ({ navigation }) => {
-  const placeholderItems = [
-    { id: '1', name: 'CS300', price: 30 },
-    { id: '2', name: 'CS310', price: 30 },
-    { id: '3', name: 'CS320', price: 30 },
-    { id: '4', name: 'CS330', price: 25 },
-  ];
+  const [bookListings, setBookListings] = useState([]);
+  const [searchText, setSearchText] = useState('');
+  const [groupedBooks, setGroupedBooks] = useState([]);
+
+  // Real-time listener for Firestore
+  useEffect(() => {
+    const unsubscribe = onSnapshot(
+      collection(db, 'bookListings'),
+      (querySnapshot) => {
+        const books = querySnapshot.docs.map((doc) => ({
+          id: doc.id,
+          ...doc.data(),
+        }));
+        setBookListings(books);
+        groupByCourse(books); // Group books by course whenever the data changes
+      },
+      (error) => {
+        console.error('Error listening to book listings:', error.message);
+        Alert.alert('Error', 'Could not load book listings. Please try again.');
+      }
+    );
+
+    // Cleanup listener on component unmount
+    return () => unsubscribe();
+  }, []);
+
+  const groupByCourse = (books) => {
+    const grouped = books.reduce((acc, book) => {
+      const course = book.course.toLowerCase();
+      if (!acc[course]) acc[course] = [];
+      acc[course].push(book);
+      return acc;
+    }, {});
+    const sections = Object.keys(grouped).map((course) => ({
+      title: course.toUpperCase(),
+      data: grouped[course],
+    }));
+    setGroupedBooks(sections);
+  };
+
+  const handleSearch = (text) => {
+    setSearchText(text);
+    if (!text.trim()) {
+      groupByCourse(bookListings);
+    } else {
+      const filtered = bookListings.filter(
+        (book) =>
+          book.bookTitle.toLowerCase().includes(text.toLowerCase()) ||
+          book.course.toLowerCase().includes(text.toLowerCase())
+      );
+      groupByCourse(filtered);
+    }
+  };
+
+  const renderSectionHeader = ({ section: { title } }) => (
+    <Text style={styles.sectionHeader}>{title}</Text>
+  );
 
   const renderItem = ({ item }) => (
-    <View style={styles.itemContainer}>
-      <Text style={styles.itemName}>{item.name}</Text>
+    <TouchableOpacity
+      style={styles.itemContainer}
+      onPress={() => navigation.navigate('BookPurchase', { book: item })}
+    >
+      <Text style={styles.itemName}>{item.bookTitle}</Text>
       <Text style={styles.itemPrice}>Price: ${item.price}</Text>
-    </View>
+    </TouchableOpacity>
   );
 
   return (
     <View style={styles.container}>
       <View style={styles.header}>
         <Text style={styles.title}>Bucky Exchange</Text>
-        <Icon name="bell-outline" size={30} color="#fff" />
+        <TouchableOpacity onPress={() => navigation.navigate('Feed')}>
+          <Icon name="bell-outline" size={30} color="#fff" />
+        </TouchableOpacity>
       </View>
-
-  
       <View style={styles.searchContainer}>
         <TextInput
-          placeholder="Hinted search text"
+          placeholder="Search by book title or course"
           placeholderTextColor="#aaa"
           style={styles.searchInput}
+          value={searchText}
+          onChangeText={handleSearch}
         />
         <Icon name="magnify" size={24} color="#666" />
       </View>
-
-      {/* Need to decide implemention, possible folders for each class? */}
-      <FlatList
-        data={placeholderItems}
-        renderItem={renderItem}
+      <SectionList
+        sections={groupedBooks}
         keyExtractor={(item) => item.id}
+        renderItem={renderItem}
+        renderSectionHeader={renderSectionHeader}
         contentContainerStyle={styles.listContainer}
+        ListEmptyComponent={
+          <Text style={styles.emptyListText}>
+            No books available. Try searching for something else.
+          </Text>
+        }
       />
-
-     {/* Bottom Navigation */}
-     <View style={styles.bottomNav}>
+      <View style={styles.bottomNav}>
         <TouchableOpacity onPress={() => navigation.navigate('Home')}>
           <Icon name="home-outline" size={30} color="#000" />
         </TouchableOpacity>
         <TouchableOpacity onPress={() => navigation.navigate('Sports')}>
-          <Icon name="basketball" size={30} color="#000" /> {/* Consistent sports icon */}
+          <Icon name="basketball" size={30} color="#000" />
         </TouchableOpacity>
         <TouchableOpacity onPress={() => navigation.navigate('Create')} style={styles.addButton}>
-          <Icon name="plus" size={30} color="#fff" />
+          <Icon name="plus" size={30} color="#000" />
         </TouchableOpacity>
         <TouchableOpacity onPress={() => navigation.navigate('Books')}>
           <Icon name="book-outline" size={30} color="#000" />
@@ -85,7 +145,7 @@ const styles = StyleSheet.create({
   searchContainer: {
     flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: '#f2f2f2',
+    backgroundColor: '#fff',
     borderRadius: 25,
     marginHorizontal: 20,
     paddingHorizontal: 10,
@@ -99,22 +159,42 @@ const styles = StyleSheet.create({
   listContainer: {
     paddingHorizontal: 20,
   },
+  sectionHeader: {
+    fontSize: 20,
+    fontWeight: 'bold',
+    backgroundColor: '#fff',
+    color: '#C8102E',
+    padding: 10,
+    borderRadius: 5,
+    marginBottom: 10,
+    textTransform: 'uppercase',
+  },
   itemContainer: {
     backgroundColor: '#fff',
     padding: 20,
     marginBottom: 10,
     borderRadius: 10,
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 1 },
+    shadowOpacity: 0.2,
+    shadowRadius: 1,
+    elevation: 2,
   },
   itemName: {
     fontSize: 18,
     fontWeight: 'bold',
+    color: '#333',
   },
   itemPrice: {
     fontSize: 16,
     color: '#333',
+    marginTop: 5,
+  },
+  emptyListText: {
+    textAlign: 'center',
+    color: '#fff',
+    marginTop: 20,
+    fontSize: 16,
   },
   bottomNav: {
     flexDirection: 'row',
@@ -124,6 +204,7 @@ const styles = StyleSheet.create({
     backgroundColor: '#f2f2f2',
     borderTopLeftRadius: 20,
     borderTopRightRadius: 20,
+    paddingHorizontal: 10,
   },
   addButton: {
     width: 60,

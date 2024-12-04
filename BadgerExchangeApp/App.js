@@ -20,10 +20,13 @@ import WomenBasketballScreen from './components/WomenBasketballScreen';
 import VerifyEmailScreen from './components/VerifyEmailScreen'
 import EventDetailsScreen from './components/EventDetailsScreen';
 import BookDetailsScreen from './components/BookDetailsScreen';
+import BookPurchase from './components/BookPurchase';
+import { CartProvider } from './components/CartContext';
 const Stack = createStackNavigator();
 
 const App = () => {
   return (
+    <CartProvider>
     <NavigationContainer>
       <Stack.Navigator initialRouteName="Login">
         <Stack.Screen 
@@ -107,6 +110,11 @@ const App = () => {
           component={VerifyEmailScreen} 
           options={{ headerShown: false }} 
         />
+          <Stack.Screen 
+          name="BookPurchase" 
+          component={BookPurchase} 
+          options={{ headerShown: false }} 
+        />
         <Stack.Screen 
           name="EventDetails" 
           component={EventDetailsScreen} 
@@ -119,6 +127,7 @@ const App = () => {
         />
       </Stack.Navigator>
     </NavigationContainer>
+    </CartProvider>
   );
 };
 
