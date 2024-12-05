@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { View, Text, TextInput, TouchableOpacity, StyleSheet, Alert } from 'react-native';
 import { db } from './firebaseConfig';
 import { collection, addDoc } from 'firebase/firestore';
+import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 
 const CreateBookListingScreen = ({ route, navigation }) => {
   const addBookToList = route?.params?.addBookToList || (() => {}); // Fallback if not passed
@@ -36,6 +37,9 @@ const CreateBookListingScreen = ({ route, navigation }) => {
 
   return (
     <View style={styles.container}>
+      <TouchableOpacity onPress={() => navigation.goBack()}>
+        <Icon name="arrow-left" paddingTop={25} size={30} color="#fff" />
+      </TouchableOpacity>
       <Text style={styles.title}>Create Book Listing</Text>
       <TextInput
         style={styles.input}
@@ -73,7 +77,6 @@ const styles = StyleSheet.create({
     padding: 20,
   },
   title: {
-    paddingTop: 50,
     fontSize: 28,
     fontWeight: 'bold',
     color: '#fff',
