@@ -3,10 +3,12 @@ import { View, Text, TouchableOpacity, StyleSheet, Alert } from 'react-native';
 import { doc, deleteDoc } from 'firebase/firestore';
 import { db } from './firebaseConfig';
 import { CartContext } from './CartContext';
+import { PurchaseContext } from './PurchaseContext';
 
 const BookPurchase = ({ route, navigation }) => {
   const { book } = route.params;
   const { addToCart } = useContext(CartContext);
+  const { addToPurchaseList } = useContext(PurchaseContext);
 
   const handleAddToCart = () => {
     addToCart(book);
@@ -15,6 +17,7 @@ const BookPurchase = ({ route, navigation }) => {
 
   const handlePurchase = async () => {
     try {
+      addToPurchaseList(book); // Ensure the complete `book` object is added
       await deleteDoc(doc(db, 'bookListings', book.id));
       Alert.alert('Purchase Complete', `You have purchased ${book.bookTitle} for $${book.price}.`);
       navigation.navigate('Books');

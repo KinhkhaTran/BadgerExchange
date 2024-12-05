@@ -40,18 +40,21 @@ const CreateBookListingScreen = ({ route, navigation }) => {
       <TextInput
         style={styles.input}
         placeholder="Course (e.g., CS 407)"
+        placeholderTextColor="#000"
         value={course}
         onChangeText={setCourse}
       />
       <TextInput
         style={styles.input}
         placeholder="Book Title"
+        placeholderTextColor="#000"
         value={bookTitle}
         onChangeText={setBookTitle}
       />
       <TextInput
         style={styles.input}
         placeholder="Price"
+        placeholderTextColor="#000"
         value={price}
         onChangeText={setPrice}
         keyboardType="numeric"
@@ -70,6 +73,7 @@ const styles = StyleSheet.create({
     padding: 20,
   },
   title: {
+    paddingTop: 50,
     fontSize: 28,
     fontWeight: 'bold',
     color: '#fff',
@@ -77,6 +81,7 @@ const styles = StyleSheet.create({
   },
   input: {
     backgroundColor: '#fff',
+    color: '#000',
     padding: 10,
     borderRadius: 8,
     marginBottom: 15,
