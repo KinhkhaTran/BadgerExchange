@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useContext } from 'react';
 import { useNavigation } from '@react-navigation/native';
 import { CartContext } from '../components/CartContext';
+import { PurchaseContext } from '../components/PurchaseContext';
 import {
   View,
   Text,
@@ -18,6 +19,7 @@ import { doc, deleteDoc, getDoc } from 'firebase/firestore';
 
 const AccountScreen = () => {
   const { cart,removeFromCart } = useContext(CartContext);
+  const { purchase, addToPurchaseList} = useContext(PurchaseContext);
   const navigation = useNavigation();
 
   const handlePurchase = async (item) => {
@@ -26,6 +28,7 @@ const AccountScreen = () => {
       await deleteDoc(doc(db, 'bookListings', item.id));
   
       removeFromCart(item.id);
+      addToPurchaseList(item); // Pass the complete item, not just the ID
   
       Alert.alert(
         'Purchase Successful',
@@ -58,6 +61,20 @@ const AccountScreen = () => {
     </View>
   );
 
+  const renderPurchaseItem = ({ item }) => (
+    <View style={styles.itemBox}>
+      <Text style={styles.itemTitle}>
+        {item.bookTitle || 'No Title Available'} {/* Fallback to handle missing data */}
+      </Text>
+      <TouchableOpacity
+        style={styles.actionButton}
+        onPress={() => Alert.alert('Details', `Details for item ${item.bookTitle || 'No Title Available'}`)}
+      >
+        <Text style={styles.detailsButton}>View Details</Text>
+      </TouchableOpacity>
+    </View>
+  );
+  
   const renderEventItem = ({ item }) => (
     <View style={styles.eventBox}>
       <Text style={styles.eventTitle}>Event/Book {item.id}</Text>
@@ -125,6 +142,7 @@ const AccountScreen = () => {
 
       <Text style={styles.sectionTitle}>My Cart</Text>
       <FlatList
+        horizontal
         data={cart}
         renderItem={renderCartItem}
         keyExtractor={(item) => item.id}
@@ -147,10 +165,13 @@ const AccountScreen = () => {
       <Text style={styles.sectionTitle}>My Events/Books</Text>
       <FlatList
         horizontal
-        data={[{ id: '1' }, { id: '2' }, { id: '3' }]}
-        renderItem={renderCartItem}
+        data={purchase} 
+        renderItem={renderPurchaseItem}
         keyExtractor={(item) => item.id}
         contentContainerStyle={styles.sectionContainer}
+        ListEmptyComponent={
+          <Text style={styles.emptyText}>You have no purchases.</Text>
+        }
       />
 
       <TouchableOpacity style={styles.logoutButton} onPress={handleLogout}>
@@ -218,7 +239,7 @@ const styles = StyleSheet.create({
     fontSize: 16,
     color: '#fff',
   },
-  profileClass: {
+profileClass: {
     fontSize: 16,
     color: '#fff',
   },
@@ -262,15 +283,21 @@ const styles = StyleSheet.create({
   sectionContainer: {
     paddingHorizontal: 20,
     marginBottom: 20,
-  },
+      },
   itemBox: {
     width: 150,
     height: 80,
-    backgroundColor: '#ddd',
+    backgroundColor: '#fff',
     borderRadius: 10,
     justifyContent: 'center',
     alignItems: 'center',
     marginRight: 10,
+  },
+  itemTitle: {
+    color: '#000', // Sets the text color to black
+    fontSize: 18, // Optional: Set the font size for better readability
+    fontWeight: '600', // Optional: Make the text a bit bold for emphasis
+    marginBottom: 5, // Optional: Add some margin for spacing
   },
   bottomNav: {
     flexDirection: 'row',
