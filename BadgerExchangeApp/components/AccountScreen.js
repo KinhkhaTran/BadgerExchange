@@ -1,4 +1,4 @@
-import React, { useContext } from 'react';
+import React, { useState, useEffect, useContext } from 'react';
 import { useNavigation } from '@react-navigation/native';
 import { CartContext } from '../components/CartContext';
 import {
@@ -13,7 +13,7 @@ import {
 } from 'react-native';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 import { auth, db } from './firebaseConfig';
-import { doc, deleteDoc } from 'firebase/firestore';
+import { doc, deleteDoc, getDoc } from 'firebase/firestore';
 
 
 const AccountScreen = () => {
@@ -74,6 +74,37 @@ const AccountScreen = () => {
     console.log('User logged out');
     navigation.navigate('Login');
   };
+
+
+  const [userData, setUserData] = useState({ name: '', email: '' });
+
+  useEffect(() => {
+    const fetchUserData = async () => {
+      try {
+        const user = auth.currentUser;
+        if (user) {
+          const userDocRef = doc(db, 'users', user.uid);
+          const userDoc = await getDoc(userDocRef);
+
+          if (userDoc.exists()) {
+            setUserData(userDoc.data());
+          } else {
+            console.log('No such document!');
+          }
+        } else {
+          console.log('User is not logged in');
+          navigation.navigate('Login');
+        }
+      } catch (error) {
+        console.error('Error fetching user data:', error.message);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchUserData();
+  }, []);
+
   return (
     <View style={styles.container}>
       <View style={styles.header}>
@@ -87,9 +118,8 @@ const AccountScreen = () => {
           style={styles.profileImage}
         />
         <View>
-          <Text style={styles.profileName}>John Smith</Text>
-          <Text style={styles.profileEmail}>john@wisc.edu</Text>
-          <Text style={styles.profileClass}>Class of 2027</Text>
+        <Text style={styles.profileName}>{userData.name}</Text>
+          <Text style={styles.profileEmail}>{userData.email}</Text>
         </View>
       </View>
 
