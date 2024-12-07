@@ -25,14 +25,18 @@ const AccountScreen = () => {
   const handlePurchase = async (item) => {
     try {
       console.log(item.id);
-      await deleteDoc(doc(db, 'bookListings', item.id));
+      if(item.bookTitle){
+        await deleteDoc(doc(db, 'bookListings', item.id))
+      } else{
+        await deleteDoc(doc(db, 'eventListings', item.id))
+      }
   
       removeFromCart(item.id);
       addToPurchaseList(item); // Pass the complete item, not just the ID
   
       Alert.alert(
         'Purchase Successful',
-        `You have purchased "${item.bookTitle}" for $${item.price}.`
+        `You have purchased "${item.bookTitle || item.game}" for $${item.price}.`
       );
     } catch (error) {
       console.error('Error removing item from Firebase:', error.message);
@@ -42,7 +46,7 @@ const AccountScreen = () => {
 
   const renderCartItem = ({ item }) => (
     <View style={styles.itemBox}>
-      <Text style={styles.itemTitle}>{item.bookTitle}</Text>
+      <Text style={styles.itemTitle}>{item.bookTitle || item.game}</Text>
       <Text style={styles.itemPrice}>${item.price}</Text>
       <View style={styles.itemActions}>
         <TouchableOpacity
@@ -64,28 +68,17 @@ const AccountScreen = () => {
   const renderPurchaseItem = ({ item }) => (
     <View style={styles.itemBox}>
       <Text style={styles.itemTitle}>
-        {item.bookTitle || 'No Title Available'} {/* Fallback to handle missing data */}
+        {item.bookTitle || item.game} {/* Fallback to handle missing data */}
       </Text>
       <TouchableOpacity
         style={styles.actionButton}
-        onPress={() => Alert.alert('Details', `Details for item ${item.bookTitle || 'No Title Available'}`)}
+        onPress={() => Alert.alert('Details', `Details for item ${item.bookTitle || item.game}`)}
       >
         <Text style={styles.detailsButton}>View Details</Text>
       </TouchableOpacity>
     </View>
   );
-  
-  const renderEventItem = ({ item }) => (
-    <View style={styles.eventBox}>
-      <Text style={styles.eventTitle}>Event/Book {item.id}</Text>
-      <TouchableOpacity
-        style={styles.actionButton}
-        onPress={() => Alert.alert('Details', `Details for item ${item.id}`)}
-      >
-        <Text style={styles.detailsButton}>View Details</Text>
-      </TouchableOpacity>
-    </View>
-  );
+
 
   const handleLogout = () => {
     console.log('User logged out');
