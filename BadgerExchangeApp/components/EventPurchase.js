@@ -115,4 +115,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default BookPurchase;
+export default EventPurchase;
