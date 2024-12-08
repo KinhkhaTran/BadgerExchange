@@ -25,7 +25,7 @@ const EventPurchase = ({ route, navigation }) => {
       console.error('Error removing event:', error.message);
       Alert.alert('Error', 'Could not complete the purchase. Please try again.');
     }
-    addToPurchaseList(item);
+    addToPurchaseList(event);
 
   };
 

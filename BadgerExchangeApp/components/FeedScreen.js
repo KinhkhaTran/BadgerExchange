@@ -1,23 +1,52 @@
-// FeedScreen.js
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { View, Text, FlatList, StyleSheet, TouchableOpacity } from 'react-native';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 import { useNavigation } from '@react-navigation/native';
+import { collection, query, orderBy, limit, onSnapshot } from 'firebase/firestore';
+import { db } from './firebaseConfig';
 
 const FeedScreen = () => {
   const navigation = useNavigation();
+  const [bookPosts, setBookPosts] = useState([]);
 
-  const notifications = [
-    { id: '1', message: 'Your event ticket has been sold!' },
-    { id: '2', message: 'New message from Jane Doe.' },
-    { id: '3', message: 'Your textbook listing has expired.' },
-  ];
+  useEffect(() => {
+    const fetchRecentBookPosts = () => {
+      try {
+        const bookPostsQuery = query(
+          collection(db, 'bookListings'),
+          orderBy('createdAt', 'desc'), // Order by most recent
+          limit(10) // Limit to the 10 most recent posts
+        );
+
+        const unsubscribe = onSnapshot(bookPostsQuery, (snapshot) => {
+          const posts = snapshot.docs.map((doc) => ({
+            id: doc.id,
+            ...doc.data(),
+          }));
+          setBookPosts(posts);
+        });
+
+        return () => unsubscribe();
+      } catch (error) {
+        console.error('Error fetching book posts:', error.message);
+      }
+    };
+
+    fetchRecentBookPosts();
+  }, []);
 
   const renderItem = ({ item }) => (
-    <View style={styles.notificationItem}>
-      <Icon name="bell" size={24} color="#C8102E" style={styles.icon} />
-      <Text style={styles.notificationText}>{item.message}</Text>
-    </View>
+    <TouchableOpacity
+      style={styles.notificationItem}
+      onPress={() => navigation.navigate('BookPurchase', { book: item })}
+    >
+      <Icon name="book-outline" size={24} color="#C8102E" style={styles.icon} />
+      <View>
+        <Text style={styles.notificationTitle}>{item.bookTitle}</Text>
+        <Text style={styles.notificationDetail}>Course: {item.course}</Text>
+        <Text style={styles.notificationDetail}>Price: ${item.price.toFixed(2)}</Text>
+      </View>
+    </TouchableOpacity>
   );
 
   return (
@@ -27,14 +56,17 @@ const FeedScreen = () => {
         <TouchableOpacity onPress={() => navigation.goBack()}>
           <Icon name="arrow-left" size={30} color="#fff" />
         </TouchableOpacity>
-        <Text style={styles.title}>Notifications</Text>
+        <Text style={styles.title}>Recent Textbook Listings</Text>
       </View>
 
       <FlatList
-        data={notifications}
+        data={bookPosts}
         renderItem={renderItem}
         keyExtractor={(item) => item.id}
         contentContainerStyle={styles.listContainer}
+        ListEmptyComponent={
+          <Text style={styles.emptyText}>No recent book posts available.</Text>
+        }
       />
     </View>
   );
@@ -78,9 +110,20 @@ const styles = StyleSheet.create({
   icon: {
     marginRight: 10,
   },
-  notificationText: {
+  notificationTitle: {
     fontSize: 16,
+    fontWeight: 'bold',
     color: '#333',
+  },
+  notificationDetail: {
+    fontSize: 14,
+    color: '#555',
+  },
+  emptyText: {
+    textAlign: 'center',
+    color: '#fff',
+    fontSize: 16,
+    marginTop: 20,
   },
 });
 

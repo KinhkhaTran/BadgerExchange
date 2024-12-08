@@ -17,9 +17,11 @@ import { auth, db } from './firebaseConfig';
 import { doc, deleteDoc, getDoc } from 'firebase/firestore';
 
 
+
 const AccountScreen = () => {
   const { cart,removeFromCart } = useContext(CartContext);
   const { purchase, addToPurchaseList} = useContext(PurchaseContext);
+  const [loading, setLoading] = useState(true);
   const navigation = useNavigation();
 
   const handlePurchase = async (item) => {
@@ -41,6 +43,9 @@ const AccountScreen = () => {
     } catch (error) {
       console.error('Error removing item from Firebase:', error.message);
       Alert.alert('Error', 'Could not complete the purchase. Please try again.');
+    }
+    finally{
+      setLoading(false);
     }
   };
 

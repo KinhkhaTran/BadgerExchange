@@ -1,14 +1,64 @@
-import React, { useContext } from 'react';
-import { View, Text, TouchableOpacity, StyleSheet, Alert } from 'react-native';
-import { doc, deleteDoc } from 'firebase/firestore';
+import React, { useState, useEffect, useContext } from 'react';
+import { View, Text, FlatList, TextInput, TouchableOpacity, StyleSheet, Alert } from 'react-native';
+import { doc, deleteDoc, collection, addDoc, query, orderBy, onSnapshot, serverTimestamp } from 'firebase/firestore';
 import { db } from './firebaseConfig';
 import { CartContext } from './CartContext';
 import { PurchaseContext } from './PurchaseContext';
+import { auth } from './firebaseConfig';
+import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
+
+if (!auth.currentUser) {
+  console.error('User is not authenticated!');
+} else {
+  console.log('Authenticated user:', auth.currentUser.uid);
+}
 
 const BookPurchase = ({ route, navigation }) => {
   const { book } = route.params;
   const { addToCart } = useContext(CartContext);
   const { addToPurchaseList } = useContext(PurchaseContext);
+
+  const [messages, setMessages] = useState([]);
+  const [newMessage, setNewMessage] = useState('');
+
+  // Fetch messages in real-time
+  useEffect(() => {
+    const chatRoomId = `book-${book.id}`; // Unique chat room ID for each book
+    const chatQuery = query(
+      collection(db, 'chats', chatRoomId, 'messages'),
+      orderBy('timestamp', 'asc')
+    );
+
+    const unsubscribe = onSnapshot(chatQuery, (snapshot) => {
+      const chatMessages = snapshot.docs.map((doc) => ({
+        id: doc.id,
+        ...doc.data(),
+      }));
+      setMessages(chatMessages);
+    });
+
+    return () => unsubscribe();
+  }, [book.id]);
+
+  const handleSendMessage = async () => {
+    if (!newMessage.trim()) return;
+
+    try {
+      const chatRoomId = `book-${book.id}`;
+      const messagesCollection = collection(db, 'chats', chatRoomId, 'messages');
+
+      await addDoc(messagesCollection, {
+        text: newMessage,
+        sender: auth.currentUser?.email || 'User', // Use the logged-in user's email
+        timestamp: serverTimestamp(),
+      });
+
+      setNewMessage('');
+    } catch (error) {
+      console.error('Error sending message:', error.message);
+      Alert.alert('Error', 'Could not send the message.');
+    }
+  };
 
   const handleAddToCart = () => {
     addToCart(book);
@@ -17,7 +67,7 @@ const BookPurchase = ({ route, navigation }) => {
 
   const handlePurchase = async () => {
     try {
-      addToPurchaseList(book); // Ensure the complete `book` object is added
+      addToPurchaseList(book);
       await deleteDoc(doc(db, 'bookListings', book.id));
       Alert.alert('Purchase Complete', `You have purchased ${book.bookTitle} for $${book.price}.`);
       navigation.navigate('Books');
@@ -25,14 +75,17 @@ const BookPurchase = ({ route, navigation }) => {
       console.error('Error removing book:', error.message);
       Alert.alert('Error', 'Could not complete the purchase. Please try again.');
     }
-
   };
 
   return (
     <View style={styles.container}>
       <View style={styles.header}>
+        <TouchableOpacity onPress={() => navigation.goBack()} style={styles.backButton}>
+          <Icon name="arrow-left" size={30} color="#fff" />
+        </TouchableOpacity>
         <Text style={styles.title}>Bucky Exchange</Text>
       </View>
+
       <View style={styles.content}>
         <Text style={styles.bookTitle}>{book.bookTitle}</Text>
         <Text style={styles.detail}>Course: {book.course}</Text>
@@ -43,31 +96,56 @@ const BookPurchase = ({ route, navigation }) => {
         <TouchableOpacity style={[styles.button, styles.purchaseButton]} onPress={handlePurchase}>
           <Text style={styles.buttonText}>Purchase</Text>
         </TouchableOpacity>
-        <TouchableOpacity style={styles.backButton} onPress={() => navigation.goBack()}>
+        <TouchableOpacity style={styles.backButtonSecondary} onPress={() => navigation.goBack()}>
           <Text style={styles.backButtonText}>Back</Text>
         </TouchableOpacity>
+      </View>
+
+      {/* Chat Room */}
+      <View style={styles.chatContainer}>
+        <FlatList
+          data={messages}
+          keyExtractor={(item) => item.id}
+          renderItem={({ item }) => (
+            <View style={styles.messageBox}>
+              <Text style={styles.messageSender}>{item.sender}</Text>
+              <Text style={styles.messageText}>{item.text}</Text>
+            </View>
+          )}
+          contentContainerStyle={styles.messageList}
+        />
+        <View style={styles.inputContainer}>
+          <TextInput
+            value={newMessage}
+            onChangeText={setNewMessage}
+            placeholder="Type your message..."
+            style={styles.input}
+          />
+          <TouchableOpacity onPress={handleSendMessage} style={styles.sendButton}>
+            <Text style={styles.sendButtonText}>Send</Text>
+          </TouchableOpacity>
+        </View>
       </View>
     </View>
   );
 };
+
 const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: '#C8102E',
   },
   header: {
-    paddingTop: 40,
-    paddingBottom: 20,
+    flexDirection: 'row',
     alignItems: 'center',
-    justifyContent: 'center',
+    padding: 20,
     backgroundColor: '#C8102E',
-    borderBottomLeftRadius: 20,
-    borderBottomRightRadius: 20,
   },
   title: {
-    fontSize: 28,
+    fontSize: 24,
     fontWeight: 'bold',
     color: '#fff',
+    marginLeft: 10,
   },
   content: {
     flex: 1,
@@ -75,43 +153,88 @@ const styles = StyleSheet.create({
     backgroundColor: '#fff',
     borderTopLeftRadius: 20,
     borderTopRightRadius: 20,
-    marginTop: -20,
   },
   bookTitle: {
-    fontSize: 24,
+    fontSize: 22,
     fontWeight: 'bold',
     color: '#C8102E',
-    marginBottom: 20,
-    textAlign: 'center',
+    marginBottom: 10,
   },
   detail: {
     fontSize: 18,
     marginBottom: 10,
-    textAlign: 'center',
     color: '#333',
   },
   button: {
-    backgroundColor: '#4CAF50',
+    backgroundColor: '#C8102E',
     padding: 15,
     borderRadius: 8,
     alignItems: 'center',
     marginBottom: 10,
   },
   purchaseButton: {
-    backgroundColor: '#C8102E',
+    backgroundColor: '#FF5C5C',
   },
   buttonText: {
     color: '#fff',
     fontSize: 16,
     fontWeight: 'bold',
   },
-  backButton: {
+  backButtonSecondary: {
     marginTop: 20,
     alignItems: 'center',
   },
   backButtonText: {
     color: '#C8102E',
     fontSize: 16,
+    fontWeight: 'bold',
+  },
+  chatContainer: {
+    flex: 1,
+    backgroundColor: '#f2f2f2',
+    padding: 10,
+    borderTopLeftRadius: 20,
+    borderTopRightRadius: 20,
+  },
+  messageList: {
+    paddingBottom: 10,
+  },
+  messageBox: {
+    padding: 10,
+    backgroundColor: '#fff',
+    borderRadius: 10,
+    marginBottom: 10,
+  },
+  messageSender: {
+    fontSize: 12,
+    fontWeight: 'bold',
+    color: '#C8102E',
+  },
+  messageText: {
+    fontSize: 16,
+    color: '#333',
+  },
+  inputContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginTop: 10,
+  },
+  input: {
+    flex: 1,
+    height: 40,
+    backgroundColor: '#fff',
+    borderRadius: 10,
+    paddingHorizontal: 10,
+    marginRight: 10,
+  },
+  sendButton: {
+    backgroundColor: '#C8102E',
+    paddingHorizontal: 15,
+    paddingVertical: 10,
+    borderRadius: 10,
+  },
+  sendButtonText: {
+    color: '#fff',
     fontWeight: 'bold',
   },
 });

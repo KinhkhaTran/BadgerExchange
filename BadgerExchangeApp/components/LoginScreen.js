@@ -7,25 +7,38 @@ import { signInWithEmailAndPassword } from 'firebase/auth';
 const LoginScreen = ({ navigation }) => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [errorMessage, setErrorMessage] = useState(''); // State for error messages
 
   const handleLogin = async () => {
+    setErrorMessage(''); // Reset error message on every attempt
+
     if (!email || !password) {
-      Alert.alert('Error', 'Please enter both email and password');
+      setErrorMessage('Please enter both email and password.');
       return;
     }
 
     try {
       const userCredential = await signInWithEmailAndPassword(auth, email, password);
       const user = userCredential.user;
-      if(user.emailVerified) {
+
+      if (user.emailVerified) {
         Alert.alert('Success', `Welcome back, ${user.email}`);
         navigation.navigate('Home');
       } else {
         navigation.navigate('VerifyEmailScreen');
       }
     } catch (error) {
-      console.error('Error logging in:', error.message);
-      Alert.alert('Error', error.message);
+      if (error.code === 'auth/invalid-email') {
+        setErrorMessage('Invalid email format.');
+      } else if (error.code === 'auth/user-not-found') {
+        setErrorMessage('No user found with this email.');
+      } else if (error.code === 'auth/wrong-password') {
+        setErrorMessage('Incorrect password. Please try again.');
+      } else if (error.code === 'auth/weak-password') {
+        setErrorMessage('Password must be at least 6 characters.');
+      } else {
+        setErrorMessage('Something went wrong. Please try again.');
+      }
     }
   };
 
@@ -34,6 +47,10 @@ const LoginScreen = ({ navigation }) => {
       <Image source={require('../assets/bucky.png')} style={styles.logo} />
       <Text style={styles.title}>Bucky Exchange</Text>
       <Text style={styles.loginText}>Login</Text>
+
+      {errorMessage ? (
+        <Text style={styles.errorMessage}>{errorMessage}</Text> // Display error message
+      ) : null}
 
       <View style={styles.inputContainer}>
         <Icon name="email-outline" size={24} color="#666" style={styles.icon} />
@@ -96,6 +113,12 @@ const styles = StyleSheet.create({
     fontSize: 24,
     color: '#fff',
     marginBottom: 20,
+  },
+  errorMessage: {
+    color: '#ff5c5c',
+    fontSize: 14,
+    marginBottom: 10,
+    textAlign: 'center',
   },
   inputContainer: {
     flexDirection: 'row',
