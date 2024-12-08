@@ -1,89 +1,113 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import {
   View,
   Text,
-  TextInput,
-  TouchableOpacity,
-  StyleSheet,
   FlatList,
-  Image,
+  StyleSheet,
+  TouchableOpacity,
 } from 'react-native';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
+import { collection, query, where, orderBy, getDocs } from 'firebase/firestore';
+import { db } from './firebaseConfig';
+
+const sportIcons = {
+  football: 'football',
+  basketball: 'basketball',
+  volleyball: 'volleyball',
+  hockey: 'hockey-sticks',
+  soccer: 'soccer',
+  baseball: 'baseball',
+  default: 'calendar-outline', // Default icon for unspecified sports
+};
 
 const HomeScreen = ({ navigation }) => {
-  const popularEvents = [
-    {
-      id: '1',
-      image: require('../assets/UWfootball.png'),
-      title: 'Football Game',
-      date: 'Nov 20, 2024',
-      description: 'Join us for an exhilarating football game! Cheer for your favorite team at the Husky Stadium.',
-    },
-    {
-      id: '2',
-      image: require('../assets/UWBasketball.png'),
-      title: 'Basketball Game',
-      date: 'Nov 22, 2024',
-      description: 'Experience the excitement of live basketball as our team goes head-to-head with rivals!',
-    },
-    {
-      id: '3',
-      image: require('../assets/UWVolleyball.png'),
-      title: 'Volleyball Match',
-      date: 'Nov 25, 2024',
-      description: 'Catch the thrilling volleyball match! Witness top-notch skills and intense competition.',
-    },
-  ];
-  
-  const popularBooks = [
-    {
-      id: '1',
-      image: require('../assets/TheBookOfC.png'),
-      title: 'The Book of C',
-      date: 'Released: 2023',
-      description: 'Master the C programming language with this comprehensive guide for beginners and experts alike.',
-    },
-    {
-      id: '2',
-      image: require('../assets/TheBookOfC.png'),
-      title: 'The Book of Python',
-      date: 'Released: 2022',
-      description: 'Dive into Python programming! This book covers everything from basic syntax to advanced techniques.',
-    },
-    {
-      id: '3',
-      image: require('../assets/TheBookOfC.png'),
-      title: 'The Book of Java',
-      date: 'Released: 2024',
-      description: 'Learn Java from scratch! Perfect for aspiring developers and seasoned coders seeking to refine their skills.',
-    },
-  ];
+  const [popularEvents, setPopularEvents] = useState([]);
+  const [upcomingEvents, setUpcomingEvents] = useState([]);
 
-  const upcomingEvents = [...popularEvents];
+  useEffect(() => {
+    const fetchEvents = async () => {
+      try {
+        const today = new Date().toISOString().split('T')[0];
 
-  const renderItem = (item, type) => (
-    <TouchableOpacity
-      style={styles.itemBox}
-      onPress={() =>
-        navigation.navigate(
-          type === 'event' ? 'EventDetails' : 'BookDetails',
-          {
-            id: item.id,
-            title: item.title,
-            date: item.date,
-            description: type === 'event' ? 'This is an event description.' : 'This is a book description.',
-            image: item.image,
+        // Fetch upcoming events
+        const upcomingQuery = query(
+          collection(db, 'eventListings'),
+          where('date', '>=', today),
+          orderBy('date', 'asc')
+        );
+        const upcomingSnapshot = await getDocs(upcomingQuery);
+
+        // Deduplicate upcoming events by `game` and limit to 5
+        const upcoming = [];
+        const addedGames = new Set();
+        upcomingSnapshot.docs.forEach((doc) => {
+          const data = doc.data();
+          if (!addedGames.has(data.game)) {
+            upcoming.push({ id: doc.id, ...data });
+            addedGames.add(data.game);
           }
-        )
+        });
+        setUpcomingEvents(upcoming.slice(0, 5)); // Limit to 5 unique events
+
+        // Fetch all events to determine popular events
+        const allEventsSnapshot = await getDocs(collection(db, 'eventListings'));
+        const events = allEventsSnapshot.docs.map((doc) => ({
+          id: doc.id,
+          ...doc.data(),
+        }));
+
+        // Count occurrences of each game
+        const gameFrequency = {};
+        events.forEach((event) => {
+          gameFrequency[event.game] = (gameFrequency[event.game] || 0) + 1;
+        });
+
+        // Determine popular games (unique games sorted by frequency)
+        const uniqueGames = [...new Map(events.map((e) => [e.game, e])).values()];
+        const popular = uniqueGames
+          .sort((a, b) => (gameFrequency[b.game] || 0) - (gameFrequency[a.game] || 0))
+          .slice(0, 5); // Limit to top 5 popular games
+        setPopularEvents(popular);
+      } catch (error) {
+        console.error('Error fetching events:', error.message);
       }
-    >
-      <Image source={item.image} style={styles.itemImage} />
-      <View style={styles.overlay}>
-        <Text style={styles.itemTitle}>{item.title}</Text>
-        <Text style={styles.itemDate}>{item.date}</Text>
-      </View>
-    </TouchableOpacity>
-  );
+    };
+
+    fetchEvents();
+  }, []);
+
+  const renderItem = (item) => {
+    const sportIconName =
+      sportIcons[item.sport?.toLowerCase()] || sportIcons.default;
+
+    return (
+      <TouchableOpacity
+        style={styles.itemBox}
+        onPress={() =>
+          navigation.navigate('EventDetails', {
+            id: item.id,
+            title: item.game,
+            date: item.date,
+            description: item.sport,
+            venue: item.venue,
+            price: item.price,
+          })
+        }
+      >
+        <View style={styles.iconContainer}>
+          <Icon name={sportIconName} size={80} color="#fff" />
+        </View>
+        <View style={styles.overlay}>
+          <Text style={styles.itemTitle} numberOfLines={1}>
+            {item.game}
+          </Text>
+          <Text style={styles.itemDate}>
+            {new Date(item.date).toDateString()} {item.time || ''}
+          </Text>
+        </View>
+      </TouchableOpacity>
+    );
+  };
 
   return (
     <View style={styles.container}>
@@ -94,31 +118,12 @@ const HomeScreen = ({ navigation }) => {
         </TouchableOpacity>
       </View>
 
-      <View style={styles.searchContainer}>
-        <Icon name="menu" size={24} color="#666" style={styles.menuIcon} />
-        <TextInput
-          placeholder="Search events or books"
-          placeholderTextColor="#aaa"
-          style={styles.searchInput}
-        />
-        <Icon name="magnify" size={24} color="#666" />
-      </View>
-
       <Text style={styles.sectionTitle}>Popular Events</Text>
       <FlatList
         horizontal
         data={popularEvents}
-        renderItem={({ item }) => renderItem(item, 'event')}
-        keyExtractor={(item) => `event-${item.id}`}
-        contentContainerStyle={styles.sectionContainer}
-      />
-
-      <Text style={styles.sectionTitle}>Popular Books</Text>
-      <FlatList
-        horizontal
-        data={popularBooks}
-        renderItem={({ item }) => renderItem(item, 'book')}
-        keyExtractor={(item) => `book-${item.id}`}
+        renderItem={({ item }) => renderItem(item)}
+        keyExtractor={(item) => `popular-${item.id}`}
         contentContainerStyle={styles.sectionContainer}
       />
 
@@ -126,11 +131,12 @@ const HomeScreen = ({ navigation }) => {
       <FlatList
         horizontal
         data={upcomingEvents}
-        renderItem={({ item }) => renderItem(item, 'event')}
+        renderItem={({ item }) => renderItem(item)}
         keyExtractor={(item) => `upcoming-${item.id}`}
         contentContainerStyle={styles.sectionContainer}
       />
 
+      {/* Bottom Navigation Panel */}
       <View style={styles.bottomNav}>
         <TouchableOpacity onPress={() => navigation.navigate('Home')}>
           <Icon name="home-outline" size={30} color="#000" />
@@ -138,7 +144,10 @@ const HomeScreen = ({ navigation }) => {
         <TouchableOpacity onPress={() => navigation.navigate('Sports')}>
           <Icon name="basketball" size={30} color="#000" />
         </TouchableOpacity>
-        <TouchableOpacity onPress={() => navigation.navigate('Create')} style={styles.addButton}>
+        <TouchableOpacity
+          onPress={() => navigation.navigate('Create')}
+          style={styles.addButton}
+        >
           <Icon name="plus" size={30} color="#fff" />
         </TouchableOpacity>
         <TouchableOpacity onPress={() => navigation.navigate('Books')}>
@@ -170,23 +179,6 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
     color: '#fff',
   },
-  searchContainer: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    backgroundColor: '#f2f2f2',
-    borderRadius: 25,
-    marginHorizontal: 20,
-    paddingHorizontal: 10,
-    marginBottom: 20,
-  },
-  menuIcon: {
-    marginRight: 10,
-  },
-  searchInput: {
-    flex: 1,
-    height: 40,
-    color: '#000',
-  },
   sectionTitle: {
     fontSize: 18,
     fontWeight: 'bold',
@@ -201,24 +193,28 @@ const styles = StyleSheet.create({
   itemBox: {
     width: 250,
     height: 150,
-    backgroundColor: '#fff',
+    backgroundColor: '#333',
     borderRadius: 10,
     overflow: 'hidden',
     marginRight: 10,
+    justifyContent: 'center',
+    alignItems: 'center',
   },
-  itemImage: {
-    width: '100%',
-    height: '100%',
+  iconContainer: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
   },
   overlay: {
     position: 'absolute',
     bottom: 0,
     width: '100%',
-    height: 40,
+    height: 60,
     backgroundColor: 'rgba(0, 0, 0, 0.6)',
     justifyContent: 'center',
     alignItems: 'center',
     paddingHorizontal: 5,
+    paddingVertical: 5,
   },
   itemTitle: {
     color: '#fff',
@@ -227,7 +223,8 @@ const styles = StyleSheet.create({
   },
   itemDate: {
     color: '#fff',
-    fontSize: 12,
+    fontSize: 14,
+    textAlign: 'center',
   },
   bottomNav: {
     flexDirection: 'row',
