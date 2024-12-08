@@ -3,13 +3,13 @@ import { View, Text, TextInput, TouchableOpacity, StyleSheet, SectionList, Alert
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 import { db } from './firebaseConfig';
 import { collection, onSnapshot } from 'firebase/firestore';
+import fetchTicketmasterData from './TicketmasterEvents';
 
 const SportsScreen = ({ navigation }) => {
   const [sportListings, setSportListings] = useState([]);
   const [searchText, setSearchText] = useState('');
   const [groupedSports, setGroupedSports] = useState([]);
 
-  // Real-time listener for Firestore
   useEffect(() => {
     const unsubscribe = onSnapshot(
       collection(db, 'eventListings'),
@@ -19,7 +19,7 @@ const SportsScreen = ({ navigation }) => {
           ...doc.data(),
         }));
         setSportListings(events);
-        groupBySport(events); // Group sports by course whenever the data changes
+        groupBySport(events);
       },
       (error) => {
         console.error('Error listening to sport listings:', error.message);
@@ -27,17 +27,17 @@ const SportsScreen = ({ navigation }) => {
       }
     );
 
-    // Cleanup listener on component unmount
     return () => unsubscribe();
   }, []);
 
   const groupBySport = (events) => {
     const grouped = events.reduce((acc, event) => {
-      const sport = event.sport.toLowerCase();
+      const sport = event.sport ? event.sport.toLowerCase() : 'unknown sport';
       if (!acc[sport]) acc[sport] = [];
       acc[sport].push(event);
       return acc;
     }, {});
+
     const sections = Object.keys(grouped).map((sport) => ({
       title: sport.toUpperCase(),
       data: grouped[sport],
@@ -59,17 +59,27 @@ const SportsScreen = ({ navigation }) => {
     }
   };
 
-  const renderSectionHeader = ({ section: { title } }) => (
-    <Text style={styles.sectionHeader}>{title}</Text>
-  );
+  const handleRefresh = async () => {
+    try {
+      await fetchTicketmasterData(); 
+      Alert.alert('Success', 'Data refreshed successfully!');
+    } catch (error) {
+      console.error('Error refreshing data:', error.message);
+      Alert.alert('Error', 'Could not refresh data. Please try again.');
+    }
+  };
 
-  const renderItem = ({ item }) => (
+  const handleHeaderPress = (title, data) => {
+    navigation.navigate('SportDetails', { sport: title, events: data });
+  };
+
+  const renderSectionHeader = ({ section: { title, data } }) => (
     <TouchableOpacity
-      style={styles.itemContainer}
-      onPress={() => navigation.navigate('EventPurchase', { event: item })}
+      onPress={() => handleHeaderPress(title, data)}
+      style={styles.sectionHeaderContainer}
     >
-      <Text style={styles.itemName}>{item.game}</Text>
-      <Text style={styles.itemPrice}>Price: ${item.price}</Text>
+      <Text style={styles.sectionHeader}>{title}</Text>
+      <Icon name="chevron-right" size={24} color="#C8102E" />
     </TouchableOpacity>
   );
 
@@ -91,10 +101,13 @@ const SportsScreen = ({ navigation }) => {
         />
         <Icon name="magnify" size={24} color="#666" />
       </View>
+      <TouchableOpacity style={styles.refreshButton} onPress={handleRefresh}>
+        <Text style={styles.refreshButtonText}>Refresh Data</Text>
+      </TouchableOpacity>
       <SectionList
         sections={groupedSports}
         keyExtractor={(item) => item.id}
-        renderItem={renderItem}
+        renderItem={() => null} 
         renderSectionHeader={renderSectionHeader}
         contentContainerStyle={styles.listContainer}
         ListEmptyComponent={
@@ -111,7 +124,7 @@ const SportsScreen = ({ navigation }) => {
           <Icon name="basketball" size={30} color="#000" />
         </TouchableOpacity>
         <TouchableOpacity onPress={() => navigation.navigate('Create')} style={styles.addButton}>
-          <Icon name="plus" size={30} color="#000" />
+          <Icon name="plus" size={30} color="#fff" />
         </TouchableOpacity>
         <TouchableOpacity onPress={() => navigation.navigate('Books')}>
           <Icon name="book-outline" size={30} color="#000" />
@@ -156,39 +169,37 @@ const styles = StyleSheet.create({
     height: 40,
     color: '#000',
   },
+  refreshButton: {
+    backgroundColor: '#fff',
+    borderRadius: 10,
+    padding: 10,
+    alignItems: 'center',
+    marginHorizontal: 20,
+    marginBottom: 20,
+  },
+  refreshButtonText: {
+    fontSize: 16,
+    color: '#C8102E',
+    fontWeight: 'bold',
+  },
   listContainer: {
     paddingHorizontal: 20,
+    paddingBottom: 100,
+  },
+  sectionHeaderContainer: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    backgroundColor: '#fff',
+    padding: 10,
+    borderRadius: 5,
+    marginBottom: 10,
   },
   sectionHeader: {
     fontSize: 20,
     fontWeight: 'bold',
-    backgroundColor: '#fff',
     color: '#C8102E',
-    padding: 10,
-    borderRadius: 5,
-    marginBottom: 10,
     textTransform: 'uppercase',
-  },
-  itemContainer: {
-    backgroundColor: '#fff',
-    padding: 20,
-    marginBottom: 10,
-    borderRadius: 10,
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 1 },
-    shadowOpacity: 0.2,
-    shadowRadius: 1,
-    elevation: 2,
-  },
-  itemName: {
-    fontSize: 18,
-    fontWeight: 'bold',
-    color: '#333',
-  },
-  itemPrice: {
-    fontSize: 16,
-    color: '#333',
-    marginTop: 5,
   },
   emptyListText: {
     textAlign: 'center',

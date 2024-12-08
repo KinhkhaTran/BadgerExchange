@@ -18,7 +18,8 @@ import BookPurchase from './components/BookPurchase';
 import EventPurchase from './components/EventPurchase';
 import { CartProvider } from './components/CartContext';
 import { PurchaseProvider } from './components/PurchaseContext';
-
+import TicketmasterEvent from './components/TicketmasterEvents';
+import SportDetails from './components/SportsDetails';
 const Stack = createStackNavigator();
 
 const App = () => {
@@ -27,11 +28,14 @@ const App = () => {
       <PurchaseProvider>
         <NavigationContainer>
           <Stack.Navigator initialRouteName="Login">
+          <Stack.Screen name="SportDetails" component={SportDetails} />
             <Stack.Screen 
               name="Login" 
               component={LoginScreen} 
               options={{ headerShown: false }} 
             />
+                    <Stack.Screen name="TicketmasterEvent" component={TicketmasterEvent} />
+
             <Stack.Screen 
               name="Home" 
               component={HomeScreen} 
