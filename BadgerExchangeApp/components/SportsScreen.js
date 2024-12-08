@@ -45,6 +45,7 @@ const SportsScreen = ({ navigation }) => {
       acc[sport].push(event);
       return acc;
     }, {});
+
     const sections = Object.keys(grouped).map((sport) => ({
       title: sport.toUpperCase(),
       data: grouped[sport],

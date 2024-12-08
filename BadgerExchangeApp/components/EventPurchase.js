@@ -25,6 +25,8 @@ const EventPurchase = ({ route, navigation }) => {
       console.error('Error removing event:', error.message);
       Alert.alert('Error', 'Could not complete the purchase. Please try again.');
     }
+    addToPurchaseList(item);
+
   };
 
   return (
@@ -115,4 +117,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default BookPurchase;
+export default EventPurchase;

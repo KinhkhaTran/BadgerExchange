@@ -11,16 +11,11 @@ import FeedScreen from './components/FeedScreen';
 import CreateListingScreen from './components/CreateListingScreen';
 import CreateBookListingScreen from './components/CreateBookListingScreen';
 import CreateSportListingScreen from './components/CreateSportListingScreen';
-import FootballScreen from './components/FootballScreen';
-import WomenHockeyScreen from './components/WomenHockeyScreen';
-import MenHockeyScreen from './components/MenHockeyScreen';
-import MenBasketballScreen from './components/MenBasketballScreen';
-import VolleyballScreen from './components/VolleyballScreen';
-import WomenBasketballScreen from './components/WomenBasketballScreen';
 import VerifyEmailScreen from './components/VerifyEmailScreen';
 import EventDetailsScreen from './components/EventDetailsScreen';
 import BookDetailsScreen from './components/BookDetailsScreen';
 import BookPurchase from './components/BookPurchase';
+import EventPurchase from './components/EventPurchase';
 import { CartProvider } from './components/CartContext';
 import { PurchaseProvider } from './components/PurchaseContext';
 import GamePurchase from './components/GamePurchase';
@@ -34,6 +29,7 @@ const App = () => {
       <PurchaseProvider>
         <NavigationContainer>
           <Stack.Navigator initialRouteName="Login">
+          <Stack.Screen name="SportDetails" component={SportDetails} />
             <Stack.Screen 
               name="Login" 
               component={LoginScreen} 
@@ -89,36 +85,6 @@ const App = () => {
               component={CreateSportListingScreen} 
               options={{ headerShown: false }} 
             />
-            <Stack.Screen 
-              name="FootballScreen" 
-              component={FootballScreen} 
-              options={{ headerShown: false }} 
-            />
-            <Stack.Screen 
-              name="WomenHockeyScreen" 
-              component={WomenHockeyScreen} 
-              options={{ headerShown: false }} 
-            />
-            <Stack.Screen 
-              name="MenHockeyScreen" 
-              component={MenHockeyScreen} 
-              options={{ headerShown: false }} 
-            />
-            <Stack.Screen 
-              name="MenBasketballScreen" 
-              component={MenBasketballScreen} 
-              options={{ headerShown: false }} 
-            />
-            <Stack.Screen 
-              name="WomenBasketballScreen" 
-              component={WomenBasketballScreen} 
-              options={{ headerShown: false }} 
-            />
-            <Stack.Screen 
-              name="VolleyballScreen" 
-              component={VolleyballScreen} 
-              options={{ headerShown: false }} 
-            />
             <Stack.Screen name="Register" component={RegisterScreen} />
             <Stack.Screen 
               name="VerifyEmailScreen" 
@@ -128,6 +94,11 @@ const App = () => {
             <Stack.Screen 
               name="BookPurchase" 
               component={BookPurchase} 
+              options={{ headerShown: false }} 
+            />
+            <Stack.Screen 
+              name="EventPurchase" 
+              component={EventPurchase} 
               options={{ headerShown: false }} 
             />
             <Stack.Screen 

@@ -25,6 +25,7 @@ const BookPurchase = ({ route, navigation }) => {
       console.error('Error removing book:', error.message);
       Alert.alert('Error', 'Could not complete the purchase. Please try again.');
     }
+
   };
 
   return (

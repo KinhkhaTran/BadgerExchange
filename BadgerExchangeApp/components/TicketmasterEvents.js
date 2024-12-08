@@ -1,6 +1,7 @@
 import React, { useEffect } from 'react';
 import { collection, addDoc, getDocs, query, where, deleteDoc, doc } from 'firebase/firestore';
 import { db } from './firebaseConfig';
+import { setDoc } from 'firebase/firestore';
 
 const keywords = ['badger football',
   'badger basketball',
@@ -22,7 +23,7 @@ const clearFirestoreCollection = async (collectionName) => {
   }
 };
 
-const fetchTicketmasterData = async () => {
+export const populateFirestore = async () => {
   const apiKey = 'pOLI73xPJH89UoSbu7h5DvBfoqnoSoa3';
   const baseUrl = 'https://app.ticketmaster.com/discovery/v2/events.json';
   const eventCollectionRef = collection(db, 'eventListings');
@@ -52,10 +53,12 @@ const fetchTicketmasterData = async () => {
 
             await Promise.all(
               events.map(async (event) => {
-                const price = event.priceRanges ? event.priceRanges[0]?.min : null;
+                let price = event.priceRanges ? event.priceRanges[0]?.min : null;
+                if (price === null) {
+                  price = Math.floor(Math.random() * (50 - 15 + 1)) + 15;
+                } 
                 if (price !== null) {
                   const eventData = {
-                    id: event.id,
                     game: event.name || 'Unknown Game',
                     sport: event.classifications[0]?.genre?.name || 'Unknown Sport',
                     date: event.dates?.start?.localDate || 'Unknown Date',
@@ -63,7 +66,8 @@ const fetchTicketmasterData = async () => {
                     venue: event._embedded?.venues[0]?.name || 'Unknown Venue',
                     price,
                   };
-                  await addDoc(eventCollectionRef, eventData);
+                  // Use `setDoc` with Ticketmaster's `event.id` as the document ID
+                  await setDoc(doc(eventCollectionRef, event.id), eventData);
                 }
               })
             );
@@ -74,13 +78,6 @@ const fetchTicketmasterData = async () => {
         }
       }
     }
-  } catch (error) {
-    console.error('Error populating Firestore:', error.message);
-  }
-};
-export const populateFirestore = async () => {
-  try {
-    await fetchTicketmasterData();
   } catch (error) {
     console.error('Error populating Firestore:', error.message);
   }
