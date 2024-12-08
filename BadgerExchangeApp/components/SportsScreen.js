@@ -1,16 +1,15 @@
-import React, { useState, useEffect } from 'react';
-import { View, Text, TextInput, TouchableOpacity, StyleSheet, SectionList, Alert } from 'react-native';
+import React, { useEffect, useState } from 'react';
+import { View, Text, SectionList, StyleSheet, TouchableOpacity, Alert } from 'react-native';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
-import { db } from './firebaseConfig';
 import { collection, onSnapshot } from 'firebase/firestore';
+import { db } from './firebaseConfig';
+import PopulateDatabase, { populateFirestore } from './TicketmasterEvents'; // Import the Ticketmaster refresh function
 
 const SportsScreen = ({ navigation }) => {
-  const [sportListings, setSportListings] = useState([]);
-  const [searchText, setSearchText] = useState('');
   const [groupedSports, setGroupedSports] = useState([]);
+  const [loading, setLoading] = useState(false); // Track loading state
 
-  // Real-time listener for Firestore
-  useEffect(() => {
+  const fetchSportsData = () => {
     const unsubscribe = onSnapshot(
       collection(db, 'eventListings'),
       (querySnapshot) => {
@@ -18,22 +17,30 @@ const SportsScreen = ({ navigation }) => {
           id: doc.id,
           ...doc.data(),
         }));
-        setSportListings(events);
-        groupBySport(events); // Group sports by course whenever the data changes
+
+        if (events.length === 0) {
+          Alert.alert('No Data', 'No sports events found.');
+        } else {
+          groupBySport(events);
+        }
       },
       (error) => {
-        console.error('Error listening to sport listings:', error.message);
-        Alert.alert('Error', 'Could not load sport listings. Please try again.');
+        console.error('Error fetching events:', error.message);
+        Alert.alert('Error', 'Could not load sports events.');
       }
     );
 
-    // Cleanup listener on component unmount
+    return unsubscribe;
+  };
+
+  useEffect(() => {
+    const unsubscribe = fetchSportsData();
     return () => unsubscribe();
   }, []);
 
   const groupBySport = (events) => {
     const grouped = events.reduce((acc, event) => {
-      const sport = event.sport.toLowerCase();
+      const sport = event.sport?.toLowerCase() || 'unknown';
       if (!acc[sport]) acc[sport] = [];
       acc[sport].push(event);
       return acc;
@@ -45,62 +52,45 @@ const SportsScreen = ({ navigation }) => {
     setGroupedSports(sections);
   };
 
-  const handleSearch = (text) => {
-    setSearchText(text);
-    if (!text.trim()) {
-      groupBySport(sportListings);
-    } else {
-      const filtered = sportListings.filter(
-        (event) =>
-          event.game.toLowerCase().includes(text.toLowerCase()) ||
-          event.sport.toLowerCase().includes(text.toLowerCase())
-      );
-      groupBySport(filtered);
+  const refreshSports = async () => {
+    setLoading(true); // Set loading to true while refreshing
+    try {
+      await populateFirestore(); // Call Ticketmaster refresh logic
+      Alert.alert('Success', 'Events refreshed successfully.');
+    } catch (error) {
+      console.error('Error refreshing events:', error.message);
+      Alert.alert('Error', 'Failed to refresh events.');
+    } finally {
+      setLoading(false); // Set loading to false after refreshing
     }
   };
 
   const renderSectionHeader = ({ section: { title } }) => (
-    <Text style={styles.sectionHeader}>{title}</Text>
-  );
-
-  const renderItem = ({ item }) => (
     <TouchableOpacity
-      style={styles.itemContainer}
-      onPress={() => navigation.navigate('EventPurchase', { event: item })}
+      style={styles.sectionHeaderContainer}
+      onPress={() => navigation.navigate('SportsDetails', { sport: title })}
     >
-      <Text style={styles.itemName}>{item.game}</Text>
-      <Text style={styles.itemPrice}>Price: ${item.price}</Text>
+      <Text style={styles.sectionHeader}>{title}</Text>
+      <Icon name="chevron-right" size={24} color="#fff" />
     </TouchableOpacity>
   );
 
   return (
     <View style={styles.container}>
       <View style={styles.header}>
-        <Text style={styles.title}>Bucky Exchange</Text>
-        <TouchableOpacity onPress={() => navigation.navigate('Feed')}>
-          <Icon name="bell-outline" size={30} color="#fff" />
+        <Text style={styles.title}>Sports Categories</Text>
+        <TouchableOpacity onPress={refreshSports} disabled={loading}>
+          <Icon name="refresh" size={30} color={loading ? '#ccc' : '#fff'} />
         </TouchableOpacity>
-      </View>
-      <View style={styles.searchContainer}>
-        <TextInput
-          placeholder="Search by game or sport"
-          placeholderTextColor="#aaa"
-          style={styles.searchInput}
-          value={searchText}
-          onChangeText={handleSearch}
-        />
-        <Icon name="magnify" size={24} color="#666" />
       </View>
       <SectionList
         sections={groupedSports}
-        keyExtractor={(item) => item.id}
-        renderItem={renderItem}
+        keyExtractor={(item, index) => item + index}
         renderSectionHeader={renderSectionHeader}
-        contentContainerStyle={styles.listContainer}
+        renderItem={() => null} // Hide individual items
+        contentContainerStyle={styles.list}
         ListEmptyComponent={
-          <Text style={styles.emptyListText}>
-            No games available. Try searching for something else.
-          </Text>
+          <Text style={styles.emptyListText}>No sports categories available.</Text>
         }
       />
       <View style={styles.bottomNav}>
@@ -110,8 +100,11 @@ const SportsScreen = ({ navigation }) => {
         <TouchableOpacity onPress={() => navigation.navigate('Sports')}>
           <Icon name="basketball" size={30} color="#000" />
         </TouchableOpacity>
-        <TouchableOpacity onPress={() => navigation.navigate('Create')} style={styles.addButton}>
-          <Icon name="plus" size={30} color="#000" />
+        <TouchableOpacity
+          onPress={() => navigation.navigate('Create')}
+          style={styles.addButton}
+        >
+          <Icon name="plus" size={30} color="#fff" />
         </TouchableOpacity>
         <TouchableOpacity onPress={() => navigation.navigate('Books')}>
           <Icon name="book-outline" size={30} color="#000" />
@@ -142,59 +135,33 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
     color: '#fff',
   },
-  searchContainer: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    backgroundColor: '#fff',
-    borderRadius: 25,
-    marginHorizontal: 20,
-    paddingHorizontal: 10,
-    marginBottom: 20,
-  },
-  searchInput: {
-    flex: 1,
-    height: 40,
-    color: '#000',
-  },
-  listContainer: {
+  list: {
     paddingHorizontal: 20,
   },
-  sectionHeader: {
-    fontSize: 20,
-    fontWeight: 'bold',
+  sectionHeaderContainer: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
     backgroundColor: '#fff',
-    color: '#C8102E',
-    padding: 10,
-    borderRadius: 5,
+    padding: 15,
+    borderRadius: 8,
     marginBottom: 10,
-    textTransform: 'uppercase',
-  },
-  itemContainer: {
-    backgroundColor: '#fff',
-    padding: 20,
-    marginBottom: 10,
-    borderRadius: 10,
     shadowColor: '#000',
     shadowOffset: { width: 0, height: 1 },
     shadowOpacity: 0.2,
     shadowRadius: 1,
     elevation: 2,
   },
-  itemName: {
-    fontSize: 18,
+  sectionHeader: {
+    fontSize: 20,
     fontWeight: 'bold',
-    color: '#333',
-  },
-  itemPrice: {
-    fontSize: 16,
-    color: '#333',
-    marginTop: 5,
+    color: '#C8102E',
   },
   emptyListText: {
     textAlign: 'center',
+    fontSize: 16,
     color: '#fff',
     marginTop: 20,
-    fontSize: 16,
   },
   bottomNav: {
     flexDirection: 'row',
@@ -204,7 +171,6 @@ const styles = StyleSheet.create({
     backgroundColor: '#f2f2f2',
     borderTopLeftRadius: 20,
     borderTopRightRadius: 20,
-    paddingHorizontal: 10,
   },
   addButton: {
     width: 60,

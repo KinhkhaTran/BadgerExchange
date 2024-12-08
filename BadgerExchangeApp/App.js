@@ -23,6 +23,8 @@ import BookDetailsScreen from './components/BookDetailsScreen';
 import BookPurchase from './components/BookPurchase';
 import { CartProvider } from './components/CartContext';
 import { PurchaseProvider } from './components/PurchaseContext';
+import GamePurchase from './components/GamePurchase';
+import SportDetails from './components/SportsDetails';
 
 const Stack = createStackNavigator();
 
@@ -38,6 +40,11 @@ const App = () => {
               options={{ headerShown: false }} 
             />
             <Stack.Screen 
+              name="GamePurchase" 
+              component={GamePurchase} 
+              options={{ headerShown: false }} 
+            />
+            <Stack.Screen 
               name="Home" 
               component={HomeScreen} 
               options={{ headerShown: false }} 
@@ -50,6 +57,11 @@ const App = () => {
             <Stack.Screen 
               name="Sports" 
               component={SportsScreen} 
+              options={{ headerShown: false }} 
+            />
+               <Stack.Screen 
+              name="SportsDetails" 
+              component={SportDetails} 
               options={{ headerShown: false }} 
             />
             <Stack.Screen 

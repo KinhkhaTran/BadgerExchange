@@ -3,13 +3,13 @@ import { getAuth } from 'firebase/auth';
 import { getFirestore } from 'firebase/firestore';
 
 const firebaseConfig = {
-  apiKey: process.env.REACT_APP_FIREBASE_API_KEY,
-  authDomain: process.env.REACT_APP_FIREBASE_AUTH_DOMAIN,
-  projectId: process.env.REACT_APP_FIREBASE_PROJECT_ID,
-  storageBucket: process.env.REACT_APP_FIREBASE_STORAGE_BUCKET,
-  messagingSenderId: process.env.REACT_APP_FIREBASE_MESSAGING_SENDER_ID,
-  appId: process.env.REACT_APP_FIREBASE_APP_ID,
-  measurementId: process.env.REACT_APP_FIREBASE_MEASUREMENT_ID
+  apiKey: "AIzaSyDOiHfrVOhtyehDAtqyfyqzH5NZXYxnUxA",
+  authDomain: "badgerexchange-dd245.firebaseapp.com",
+  projectId: "badgerexchange-dd245",
+  storageBucket: "badgerexchange-dd245.appspot.com",
+  messagingSenderId: "548647334261",
+  appId: "1:548647334261:web:dbe78ee6341408c7cb233c",
+  measurementId: "G-MFZEF9GNFZ"
 };
 
 const app = initializeApp(firebaseConfig);

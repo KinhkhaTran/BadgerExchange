@@ -76,38 +76,30 @@ const HomeScreen = ({ navigation }) => {
     fetchEvents();
   }, []);
 
-  const renderItem = (item) => {
-    const sportIconName =
-      sportIcons[item.sport?.toLowerCase()] || sportIcons.default;
-
-    return (
-      <TouchableOpacity
-        style={styles.itemBox}
-        onPress={() =>
-          navigation.navigate('EventDetails', {
-            id: item.id,
-            title: item.game,
-            date: item.date,
-            description: item.sport,
-            venue: item.venue,
-            price: item.price,
-          })
-        }
-      >
-        <View style={styles.iconContainer}>
-          <Icon name={sportIconName} size={80} color="#fff" />
-        </View>
-        <View style={styles.overlay}>
-          <Text style={styles.itemTitle} numberOfLines={1}>
-            {item.game}
-          </Text>
-          <Text style={styles.itemDate}>
-            {new Date(item.date).toDateString()} {item.time || ''}
-          </Text>
-        </View>
-      </TouchableOpacity>
-    );
-  };
+  const renderItem = (item) => (
+    <TouchableOpacity
+      style={styles.itemBox}
+      onPress={() =>
+        navigation.navigate('GamePurchase', { game: item }) // Navigate to GamePurchase
+      }
+    >
+      <View style={styles.iconContainer}>
+        <Icon
+          name={sportIcons[item.sport?.toLowerCase()] || sportIcons.default}
+          size={80}
+          color="#fff"
+        />
+      </View>
+      <View style={styles.overlay}>
+        <Text style={styles.itemTitle} numberOfLines={1}>
+          {item.game}
+        </Text>
+        <Text style={styles.itemDate}>
+          {new Date(item.date).toDateString()} {item.time || ''}
+        </Text>
+      </View>
+    </TouchableOpacity>
+  );
 
   return (
     <View style={styles.container}>
