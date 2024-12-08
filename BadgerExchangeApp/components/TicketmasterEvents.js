@@ -11,17 +11,7 @@ const keywords = ['badger football',
   'Badger hockey',
 ];
 
-const clearFirestoreCollection = async (collectionName) => {
-  try {
-    const collectionRef = collection(db, collectionName);
-    const snapshot = await getDocs(collectionRef);
-    const deletePromises = snapshot.docs.map((docItem) => deleteDoc(doc(collectionRef, docItem.id)));
-    await Promise.all(deletePromises);
-    console.log(`Cleared all documents from ${collectionName}`);
-  } catch (error) {
-    console.error('Error clearing Firestore collection:', error.message);
-  }
-};
+
 
 export const populateFirestore = async () => {
   const apiKey = 'pOLI73xPJH89UoSbu7h5DvBfoqnoSoa3';
@@ -35,7 +25,7 @@ export const populateFirestore = async () => {
   ];
 
   try {
-    await clearFirestoreCollection('eventListings');
+    //await clearFirestoreCollection('eventListings');
 
     for (const range of dateRanges) {
       for (const keyword of keywords) {
@@ -66,7 +56,6 @@ export const populateFirestore = async () => {
                     venue: event._embedded?.venues[0]?.name || 'Unknown Venue',
                     price,
                   };
-                  // Use `setDoc` with Ticketmaster's `event.id` as the document ID
                   await setDoc(doc(eventCollectionRef, event.id), eventData);
                 }
               })
