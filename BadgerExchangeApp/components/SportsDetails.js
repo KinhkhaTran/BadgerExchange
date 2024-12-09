@@ -1,5 +1,12 @@
 import React, { useEffect, useState } from 'react';
-import { View, Text, FlatList, StyleSheet, TouchableOpacity } from 'react-native';
+import {
+  View,
+  Text,
+  FlatList,
+  StyleSheet,
+  TouchableOpacity,
+  SafeAreaView,
+} from 'react-native';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 import { collection, query, where, onSnapshot, orderBy } from 'firebase/firestore';
 import { db } from './firebaseConfig';
@@ -13,7 +20,7 @@ const SportDetails = ({ route, navigation }) => {
   useEffect(() => {
     const fetchGames = () => {
       const q = query(collection(db, 'eventListings'), orderBy('date'));
-  
+
       // Real-time listener for Firestore
       const unsubscribe = onSnapshot(
         q,
@@ -23,13 +30,13 @@ const SportDetails = ({ route, navigation }) => {
             ...doc.data(),
           }));
           console.log('All games in Firestore:', allGames);
-  
+
           // Filter by sport (case-insensitive)
           const filteredGames = allGames.filter(
             (game) => game.sport.toLowerCase() === sport.toLowerCase()
           );
           console.log('Filtered games:', filteredGames);
-  
+
           setGames(filteredGames);
           setCurrentPage(1);
         },
@@ -37,15 +44,13 @@ const SportDetails = ({ route, navigation }) => {
           console.error('Error fetching games:', error.message);
         }
       );
-  
+
       return unsubscribe;
     };
-  
+
     const unsubscribe = fetchGames();
     return () => unsubscribe(); // Cleanup listener on component unmount
   }, [sport]);
-  
-    
 
   // Pagination logic
   const totalPages = Math.ceil(games.length / itemsPerPage);
@@ -67,7 +72,6 @@ const SportDetails = ({ route, navigation }) => {
   };
 
   const renderItem = ({ item }) => (
-    console.log(item),
     <TouchableOpacity
       style={styles.itemContainer}
       onPress={() => navigation.navigate('GamePurchase', { game: item })}
@@ -79,7 +83,7 @@ const SportDetails = ({ route, navigation }) => {
   );
 
   return (
-    <View style={styles.container}>
+    <SafeAreaView style={styles.container}>
       <View style={styles.header}>
         <TouchableOpacity onPress={() => navigation.goBack()}>
           <Icon name="arrow-left" size={30} color="#fff" />
@@ -93,7 +97,6 @@ const SportDetails = ({ route, navigation }) => {
         contentContainerStyle={styles.list}
         ListEmptyComponent={<Text style={styles.emptyListText}>No events found for {sport}.</Text>}
       />
-      {/* Pagination controls */}
       <View style={styles.pagination}>
         <TouchableOpacity
           style={[styles.pageButton, currentPage === 1 && styles.disabledButton]}
@@ -113,7 +116,7 @@ const SportDetails = ({ route, navigation }) => {
           <Text style={styles.pageButtonText}>Next</Text>
         </TouchableOpacity>
       </View>
-    </View>
+    </SafeAreaView>
   );
 };
 
@@ -126,7 +129,8 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     paddingHorizontal: 20,
-    paddingVertical: 10,
+    paddingTop: 50, // Ensures space below the safe area
+    paddingBottom: 10,
     backgroundColor: '#C8102E',
     marginBottom: 10,
   },
