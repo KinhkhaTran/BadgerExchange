@@ -104,17 +104,42 @@ const BookPurchase = ({ route, navigation }) => {
 
       {/* Chat Room */}
       <View style={styles.chatContainer}>
-        <FlatList
-          data={messages}
-          keyExtractor={(item) => item.id}
-          renderItem={({ item }) => (
-            <View style={styles.messageBox}>
-              <Text style={styles.messageSender}>{item.sender}</Text>
-              <Text style={styles.messageText}>{item.text}</Text>
-            </View>
-          )}
-          contentContainerStyle={styles.messageList}
-        />
+      <FlatList
+        data={messages}
+        keyExtractor={(item) => item.id}
+        renderItem={({ item }) => (
+          <View
+            style={[
+              styles.messageBox,
+              item.sender === auth.currentUser?.email
+                ? styles.sentMessageBox
+                : styles.receivedMessageBox,
+            ]}
+          >
+            <Text
+              style={[
+                styles.senderEmail,
+                item.sender === auth.currentUser?.email
+                  ? styles.sentSenderEmail
+                  : styles.receivedSenderEmail,
+              ]}
+            >
+              {item.sender}
+            </Text>
+            <Text
+              style={[
+                styles.messageText,
+                item.sender === auth.currentUser?.email
+                  ? styles.sentMessageText
+                  : styles.receivedMessageText,
+              ]}
+            >
+              {item.text}
+            </Text>
+          </View>
+        )}
+        contentContainerStyle={styles.messageList}
+      />
         <View style={styles.inputContainer}>
           <TextInput
             value={newMessage}
@@ -198,14 +223,31 @@ const styles = StyleSheet.create({
     borderTopLeftRadius: 20,
     borderTopRightRadius: 20,
   },
+  sentSenderEmail: {
+    color: '#fff', // White for sent messages
+    textAlign: 'right', // Align email to the right for sent messages
+  },
+  receivedSenderEmail: {
+    color: '#C8102E', // Red for received messages
+    textAlign: 'left', // Align email to the left for received messages
+  },
   messageList: {
     paddingBottom: 10,
   },
   messageBox: {
     padding: 10,
-    backgroundColor: '#fff',
     borderRadius: 10,
     marginBottom: 10,
+    maxWidth: '75%',
+    alignSelf: 'flex-start',
+  },
+  sentMessageBox: {
+    backgroundColor: '#C8102E',
+    alignSelf: 'flex-end', // Align to the right
+  },
+  receivedMessageBox: {
+    backgroundColor: '#fff',
+    alignSelf: 'flex-start', // Align to the left
   },
   messageSender: {
     fontSize: 12,
@@ -214,7 +256,7 @@ const styles = StyleSheet.create({
   },
   messageText: {
     fontSize: 16,
-    color: '#333',
+    fontWeight: 'bold',
   },
   inputContainer: {
     flexDirection: 'row',
@@ -238,6 +280,12 @@ const styles = StyleSheet.create({
   sendButtonText: {
     color: '#fff',
     fontWeight: 'bold',
+  },
+  sentMessageText: {
+    color: '#fff', // White text for sent messages
+  },
+  receivedMessageText: {
+    color: '#C8102E', // Red text for received messages
   },
 });
 
