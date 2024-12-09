@@ -49,7 +49,7 @@ const BookPurchase = ({ route, navigation }) => {
 
       await addDoc(messagesCollection, {
         text: newMessage,
-        sender: auth.currentUser?.email || 'User', // Use the logged-in user's email
+        sender: userData?.name || 'User', // Use the logged-in user's email
         timestamp: serverTimestamp(),
       });
 
@@ -70,7 +70,8 @@ const BookPurchase = ({ route, navigation }) => {
       addToPurchaseList(book);
       await deleteDoc(doc(db, 'bookListings', book.id));
       Alert.alert('Purchase Complete', `You have purchased ${book.bookTitle} for $${book.price}.`);
-      navigation.navigate('Books');
+      console.log('Book being passed:', book);
+      navigation.navigate('BookPurchase', { book });
     } catch (error) {
       console.error('Error removing book:', error.message);
       Alert.alert('Error', 'Could not complete the purchase. Please try again.');
@@ -90,6 +91,7 @@ const BookPurchase = ({ route, navigation }) => {
         <Text style={styles.bookTitle}>{book.bookTitle}</Text>
         <Text style={styles.detail}>Course: {book.course}</Text>
         <Text style={styles.detail}>Price: ${book.price}</Text>
+        <Text style={styles.detail}>Seller: {book.seller || 'Unknown'}</Text>
         <TouchableOpacity style={styles.button} onPress={handleAddToCart}>
           <Text style={styles.buttonText}>Add to Cart</Text>
         </TouchableOpacity>

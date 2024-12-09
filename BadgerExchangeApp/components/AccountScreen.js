@@ -183,7 +183,7 @@ const AccountScreen = () => {
         <TouchableOpacity onPress={() => navigation.navigate('Sports')}>
           <Icon name="basketball" size={30} color="#000" />
         </TouchableOpacity>
-        <TouchableOpacity onPress={() => navigation.navigate('Create')} style={styles.addButton}>
+        <TouchableOpacity onPress={() => navigation.navigate('Create', { userData })} style={styles.addButton}>
           <Icon name="plus" size={30} color="#fff" />
         </TouchableOpacity>
         <TouchableOpacity onPress={() => navigation.navigate('Books')}>

@@ -1,15 +1,41 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { View, Text, TextInput, TouchableOpacity, StyleSheet, Alert } from 'react-native';
 import { db } from './firebaseConfig';
-import { collection, addDoc } from 'firebase/firestore';
+import { collection, addDoc, getDoc, doc } from 'firebase/firestore';
+import { getAuth } from 'firebase/auth'; // Import Firebase Auth
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 
 const CreateBookListingScreen = ({ route, navigation }) => {
-  const addBookToList = route?.params?.addBookToList || (() => {}); // Fallback if not passed
+  const addBookToList = route?.params?.addBookToList || (() => {});
 
   const [course, setCourse] = useState('');
   const [bookTitle, setBookTitle] = useState('');
   const [price, setPrice] = useState('');
+  const [sellerName, setSellerName] = useState('');
+
+  useEffect(() => {
+    // Fetch the logged-in user's name
+    const fetchUserData = async () => {
+      try {
+        const auth = getAuth(); // Initialize Firebase Auth
+        const user = auth.currentUser;
+        if (user) {
+          const userDoc = await getDoc(doc(db, 'users', user.uid));
+          if (userDoc.exists()) {
+            setSellerName(userDoc.data().name || 'Unknown');
+          } else {
+            console.error('User document not found in Firestore');
+          }
+        } else {
+          console.error('No authenticated user found');
+        }
+      } catch (error) {
+        console.error('Error fetching user data:', error.message);
+      }
+    };
+
+    fetchUserData();
+  }, []);
 
   const handleCreateListing = async () => {
     if (!course || !bookTitle || !price) {
@@ -22,6 +48,7 @@ const CreateBookListingScreen = ({ route, navigation }) => {
         course,
         bookTitle,
         price: parseFloat(price),
+        seller: sellerName, // Use the seller's name
         createdAt: new Date(),
       };
 
