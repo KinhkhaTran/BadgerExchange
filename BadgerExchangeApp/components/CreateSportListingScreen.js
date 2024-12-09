@@ -104,6 +104,7 @@ const styles = StyleSheet.create({
     padding: 20,
   },
   backButton: {
+    paddingTop: 30,
     marginBottom: 20,
   },
   title: {
