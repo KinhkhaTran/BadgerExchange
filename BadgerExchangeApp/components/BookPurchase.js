@@ -49,7 +49,7 @@ const BookPurchase = ({ route, navigation }) => {
 
       await addDoc(messagesCollection, {
         text: newMessage,
-        sender: userData?.name || 'User', // Use the logged-in user's email
+        sender: auth.currentUser?.email || 'User', // Use the logged-in user's email
         timestamp: serverTimestamp(),
       });
 
@@ -70,8 +70,7 @@ const BookPurchase = ({ route, navigation }) => {
       addToPurchaseList(book);
       await deleteDoc(doc(db, 'bookListings', book.id));
       Alert.alert('Purchase Complete', `You have purchased ${book.bookTitle} for $${book.price}.`);
-      console.log('Book being passed:', book);
-      navigation.navigate('BookPurchase', { book });
+      navigation.navigate('Books');
     } catch (error) {
       console.error('Error removing book:', error.message);
       Alert.alert('Error', 'Could not complete the purchase. Please try again.');
