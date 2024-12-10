@@ -24,98 +24,102 @@ import SportDetails from './components/SportsDetails';
 const Stack = createStackNavigator();
 
 const App = () => {
-  return (
-    <CartProvider>
-      <PurchaseProvider>
-        <NavigationContainer>
-          <Stack.Navigator initialRouteName="Login">
-          <Stack.Screen name="SportDetails" component={SportDetails} />
-            <Stack.Screen 
-              name="Login" 
-              component={LoginScreen} 
-              options={{ headerShown: false }} 
-            />
-            <Stack.Screen 
-              name="GamePurchase" 
-              component={GamePurchase} 
-              options={{ headerShown: false }} 
-            />
-            <Stack.Screen 
-              name="Home" 
-              component={HomeScreen} 
-              options={{ headerShown: false }} 
-            />
-            <Stack.Screen 
-              name="Account" 
-              component={AccountScreen} 
-              options={{ headerShown: false }} 
-            />
-            <Stack.Screen 
-              name="Sports" 
-              component={SportsScreen} 
-              options={{ headerShown: false }} 
-            />
-               <Stack.Screen 
-              name="SportsDetails" 
-              component={SportDetails} 
-              options={{ headerShown: false }} 
-            />
-            <Stack.Screen 
-              name="Books" 
-              component={TextbookScreen} 
-              options={{ headerShown: false }} 
-            />
-            <Stack.Screen 
-              name="Feed" 
-              component={FeedScreen} 
-              options={{ headerShown: false }} 
-            />
-            <Stack.Screen 
-              name="Create" 
-              component={CreateListingScreen} 
-              options={{ headerShown: false }} 
-            />
-            <Stack.Screen 
-              name="CreateBookListing" 
-              component={CreateBookListingScreen} 
-              options={{ headerShown: false }} 
-            />
-            <Stack.Screen 
-              name="CreateSportListing" 
-              component={CreateSportListingScreen} 
-              options={{ headerShown: false }} 
-            />
-            <Stack.Screen name="Register" component={RegisterScreen} />
-            <Stack.Screen 
-              name="VerifyEmailScreen" 
-              component={VerifyEmailScreen} 
-              options={{ headerShown: false }} 
-            />
-            <Stack.Screen 
-              name="BookPurchase" 
-              component={BookPurchase} 
-              options={{ headerShown: false }} 
-            />
-            <Stack.Screen 
-              name="EventPurchase" 
-              component={EventPurchase} 
-              options={{ headerShown: false }} 
-            />
-            <Stack.Screen 
-              name="EventDetails" 
-              component={EventDetailsScreen} 
-              options={{ headerShown: false }} 
-            />
-            <Stack.Screen 
-              name="BookDetails" 
-              component={BookDetailsScreen} 
-              options={{ headerShown: false }} 
-            />
-          </Stack.Navigator>
-        </NavigationContainer>
-      </PurchaseProvider>
-    </CartProvider>
-  );
+  try {
+    return (
+      <CartProvider>
+        <PurchaseProvider>
+          <NavigationContainer>
+            <Stack.Navigator initialRouteName="Login">
+              <Stack.Screen name="SportDetails" component={SportDetails} />
+              <Stack.Screen
+                name="Login"
+                component={LoginScreen}
+                options={{ headerShown: false }}
+              />
+              <Stack.Screen
+                name="GamePurchase"
+                component={GamePurchase}
+                options={{ headerShown: false }}
+              />
+              <Stack.Screen
+                name="Home"
+                component={HomeScreen}
+                options={{ headerShown: false }}
+              />
+              <Stack.Screen
+                name="Account"
+                component={AccountScreen}
+                options={{ headerShown: false }}
+              />
+              <Stack.Screen
+                name="Sports"
+                component={SportsScreen}
+                options={{ headerShown: false }}
+              />
+              <Stack.Screen
+                name="SportsDetails"
+                component={SportDetails}
+                options={{ headerShown: false }}
+              />
+              <Stack.Screen
+                name="Books"
+                component={TextbookScreen}
+                options={{ headerShown: false }}
+              />
+              <Stack.Screen
+                name="Feed"
+                component={FeedScreen}
+                options={{ headerShown: false }}
+              />
+              <Stack.Screen
+                name="Create"
+                component={CreateListingScreen}
+                options={{ headerShown: false }}
+              />
+              <Stack.Screen
+                name="CreateBookListing"
+                component={CreateBookListingScreen}
+                options={{ headerShown: false }}
+              />
+              <Stack.Screen
+                name="CreateSportListing"
+                component={CreateSportListingScreen}
+                options={{ headerShown: false }}
+              />
+              <Stack.Screen name="Register" component={RegisterScreen} />
+              <Stack.Screen
+                name="VerifyEmailScreen"
+                component={VerifyEmailScreen}
+                options={{ headerShown: false }}
+              />
+              <Stack.Screen
+                name="BookPurchase"
+                component={BookPurchase}
+                options={{ headerShown: false }}
+              />
+              <Stack.Screen
+                name="EventPurchase"
+                component={EventPurchase}
+                options={{ headerShown: false }}
+              />
+              <Stack.Screen
+                name="EventDetails"
+                component={EventDetailsScreen}
+                options={{ headerShown: false }}
+              />
+              <Stack.Screen
+                name="BookDetails"
+                component={BookDetailsScreen}
+                options={{ headerShown: false }}
+              />
+            </Stack.Navigator>
+          </NavigationContainer>
+        </PurchaseProvider>
+      </CartProvider>
+    );
+  } catch (error) {
+    console.log(error)
+  }
 };
 
 export default App;

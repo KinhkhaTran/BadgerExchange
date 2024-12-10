@@ -55,8 +55,8 @@ const RegisterScreen = ({ navigation }) => {
 
       // navigation.navigate('Login'); 
     } catch (error) {
-      console.error('Error registering user:', error.message);
-      Alert.alert('Error', error.message);
+      console.log('Error registering user:', error.message);
+      Alert.alert('Error', error.message.replace(/Firebase:/i, '').replace(/\(.*$/, '')); // declutter error message w/ regex
     }
   };
 

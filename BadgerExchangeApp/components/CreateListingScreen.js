@@ -45,7 +45,7 @@ const CreateListingScreen = ({ navigation }) => {
           <Icon name="home-outline" size={30} color="#000" />
         </TouchableOpacity>
         <TouchableOpacity onPress={() => navigation.navigate('Sports')}>
-          <Icon name="basketball" size={30} color="#000" /> {/* Consistent sports icon */}
+          <Icon name="basketball" size={30} color="#000" /> 
         </TouchableOpacity>
         <TouchableOpacity onPress={() => navigation.navigate('Create')} style={styles.addButton}>
           <Icon name="plus" size={30} color="#fff" />
@@ -65,7 +65,7 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: '#C8102E', // default Wisconsin Red background color
-    paddingTop: 40,
+    paddingTop: 60,
   },
   header: {
     flexDirection: 'row',

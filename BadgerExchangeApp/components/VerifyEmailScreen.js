@@ -49,7 +49,7 @@ const VerificationScreen = ({ navigation }) => {
                 Alert.alert('Verification Email Sent', 'We have sent a new verification email to your inbox.');
             }
         } catch (error) {
-            console.error('Error sending verification email:', error.message);
+            console.log('Error sending verification email:', error.message);
             Alert.alert('Error', 'Failed to resend verification email. Please try again.');
         }
     };

@@ -12,7 +12,8 @@ const GamePurchase = ({ route, navigation }) => {
 
   const handleAddToCart = () => {
     addToCart(game);
-    Alert.alert('Success', `${game.name} has been added to your cart.`);
+    console.log(game)
+    Alert.alert('Success', `${game.game} has been added to your cart.`);
   };
 
   const handlePurchase = async () => {
@@ -71,6 +72,7 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: '#C8102E',
+    paddingTop: 20
   },
   header: {
     paddingTop: 40,

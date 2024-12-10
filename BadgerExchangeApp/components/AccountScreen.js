@@ -61,10 +61,10 @@ const AccountScreen = () => {
           <Text style={styles.removeButton}>Remove</Text>
         </TouchableOpacity>
         <TouchableOpacity
-          style={[styles.actionButton, styles.purchaseButton]}
+          style={styles.actionButton}
           onPress={() => handlePurchase(item)}
         >
-          <Text style={styles.purchaseText}>Purchase</Text>
+          <Text style={styles.purchaseButton}>Purchase</Text>
         </TouchableOpacity>
       </View>
     </View>
@@ -143,7 +143,7 @@ const AccountScreen = () => {
         horizontal
         data={cart}
         renderItem={renderCartItem}
-        keyExtractor={(item) => item.id}
+        keyExtractor={(item) => {item.id}}
         contentContainerStyle={styles.sectionContainer}
         ListEmptyComponent={
           <Text style={styles.emptyText}>Your cart is empty.</Text>
@@ -165,7 +165,7 @@ const AccountScreen = () => {
         horizontal
         data={purchase} 
         renderItem={renderPurchaseItem}
-        keyExtractor={(item) => item.id}
+        keyExtractor={(item) => {item.id}}
         contentContainerStyle={styles.sectionContainer}
         ListEmptyComponent={
           <Text style={styles.emptyText}>You have no purchases.</Text>
@@ -201,7 +201,7 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: '#C8102E',
-    paddingTop: 40,
+    paddingTop: 60,
   },
   header: {
     flexDirection: 'row',
@@ -237,7 +237,7 @@ const styles = StyleSheet.create({
     fontSize: 16,
     color: '#fff',
   },
-profileClass: {
+  profileClass: {
     fontSize: 16,
     color: '#fff',
   },
@@ -261,7 +261,8 @@ profileClass: {
     borderRadius: 25,
     marginHorizontal: 20,
     paddingHorizontal: 10,
-    marginBottom: 20,
+    marginBottom: 15,
+    marginTop: 15
   },
   menuIcon: {
     marginRight: 10,
@@ -283,8 +284,8 @@ profileClass: {
     marginBottom: 20,
       },
   itemBox: {
-    width: 150,
-    height: 80,
+    width: 160,
+    height: 180,
     backgroundColor: '#fff',
     borderRadius: 10,
     justifyContent: 'center',
@@ -293,9 +294,11 @@ profileClass: {
   },
   itemTitle: {
     color: '#000', // Sets the text color to black
-    fontSize: 18, // Optional: Set the font size for better readability
-    fontWeight: '600', // Optional: Make the text a bit bold for emphasis
-    marginBottom: 5, // Optional: Add some margin for spacing
+    fontSize: 14, // Optional: Set the font size for better readability
+    fontWeight: '700', // Optional: Make the text a bit bold for emphasis
+    marginTop: 10, // Optional: Add some margin for spacing
+    marginLeft: 10,
+    textAlign: 'center'
   },
   bottomNav: {
     flexDirection: 'row',
@@ -315,6 +318,39 @@ profileClass: {
     alignItems: 'center',
     marginTop: -30,
   },
+  removeButton: {
+    fontSize: 12,
+    fontWeight: '600', // Optional: Make the text a bit bold for emphasis
+    backgroundColor: '#C8102E',
+    borderRadius: 20,
+    textAlign: 'center',
+    padding: 10,
+    margin: 5
+  },
+  purchaseButton: {
+    fontSize: 12,
+    fontWeight: '600', // Optional: Make the text a bit bold for emphasis
+    backgroundColor: '#568203',
+    borderRadius: 20,
+    textAlign: 'center',
+    padding: 10,
+    marginLeft: 5, 
+    marginRight: 5,
+    marginBottom: 5
+  },
+  itemPrice : {
+    fontWeight: '800',
+    margin: 2
+  },
+  detailsButton: {
+    fontSize: 12,
+    fontWeight: '600', // Optional: Make the text a bit bold for emphasis
+    backgroundColor: '#8a8a8a',
+    borderRadius: 20,
+    textAlign: 'center',
+    padding: 10,
+    margin: 10
+  }
 });
 
 export default AccountScreen;

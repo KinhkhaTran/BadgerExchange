@@ -8,7 +8,7 @@ import { auth } from './firebaseConfig';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 
 if (!auth.currentUser) {
-  console.error('User is not authenticated!');
+  console.log('User is not authenticated!'); 
 } else {
   console.log('Authenticated user:', auth.currentUser.uid);
 }
@@ -160,6 +160,11 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: '#C8102E',
+    paddingLeft: 10,
+    paddingRight: 10,
+    paddingBottom: 15,
+    paddingTop: 20
+    
   },
   header: {
     flexDirection: 'row',
@@ -178,8 +183,7 @@ const styles = StyleSheet.create({
     flex: 1,
     padding: 20,
     backgroundColor: '#fff',
-    borderTopLeftRadius: 20,
-    borderTopRightRadius: 20,
+    borderRadius: 20
   },
   bookTitle: {
     fontSize: 22,
@@ -220,8 +224,8 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: '#f2f2f2',
     padding: 10,
-    borderTopLeftRadius: 20,
-    borderTopRightRadius: 20,
+    borderRadius: 20,
+    marginTop: 10
   },
   sentSenderEmail: {
     color: '#fff', // White for sent messages
