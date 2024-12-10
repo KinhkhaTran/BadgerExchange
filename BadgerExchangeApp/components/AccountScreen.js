@@ -124,7 +124,9 @@ const AccountScreen = () => {
     <View style={styles.container}>
       <View style={styles.header}>
         <Text style={styles.title}>Bucky Exchange</Text>
-        <Icon name="bell-outline" size={30} color="#fff" />
+        <TouchableOpacity onPress={() => navigation.navigate('Feed')}>
+          <Icon name="bell-outline" size={30} color="#fff" />
+        </TouchableOpacity>
       </View>
 
       <View style={styles.profileSection}>
