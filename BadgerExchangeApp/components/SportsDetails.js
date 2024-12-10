@@ -129,7 +129,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     paddingHorizontal: 20,
-    paddingTop: 50, // Ensures space below the safe area
+    paddingTop: 10, // Ensures space below the safe area
     paddingBottom: 10,
     backgroundColor: '#C8102E',
     marginBottom: 10,
@@ -173,10 +173,9 @@ const styles = StyleSheet.create({
   },
   pagination: {
     flexDirection: 'row',
-    justifyContent: 'space-between',
+    justifyContent: 'space-around',
     alignItems: 'center',
     padding: 20,
-    backgroundColor: '#fff',
     borderTopLeftRadius: 20,
     borderTopRightRadius: 20,
   },
@@ -187,7 +186,7 @@ const styles = StyleSheet.create({
     borderRadius: 8,
   },
   disabledButton: {
-    backgroundColor: '#ccc',
+    backgroundColor: '#aaa',
   },
   pageButtonText: {
     color: '#fff',
@@ -196,7 +195,7 @@ const styles = StyleSheet.create({
   },
   pageIndicator: {
     fontSize: 16,
-    color: '#333',
+    color: '#fff',
   },
 });
 
