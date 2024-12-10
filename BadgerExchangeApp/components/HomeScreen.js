@@ -3,6 +3,7 @@ import {
   View,
   Text,
   FlatList,
+  Image,
   StyleSheet,
   TouchableOpacity,
 } from 'react-native';
@@ -22,6 +23,7 @@ const sportIcons = {
 
 const HomeScreen = ({ navigation }) => {
   const [popularEvents, setPopularEvents] = useState([]);
+  const [popularBooks, setPopularBooks] = useState([]);
   const [upcomingEvents, setUpcomingEvents] = useState([]);
 
   useEffect(() => {
@@ -72,34 +74,85 @@ const HomeScreen = ({ navigation }) => {
         console.error('Error fetching events:', error.message);
       }
     };
-
     fetchEvents();
+
+    const fetchBooks = async () => {
+      try {
+        // Fetch all books to determine popular events
+        const allBooksSnapshot = await getDocs(collection(db, 'bookListings'));
+        const books = allBooksSnapshot.docs.map((doc) => ({
+          id: doc.id,
+          ...doc.data(),
+        }));
+
+        // Count occurrences of each game
+        const bookFrequency = {};
+        books.forEach((book) => {
+          bookFrequency[book.bookTitle] = (bookFrequency[book.bookTitle] || 0) + 1;
+        });
+
+        // Determine popular games (unique games sorted by frequency)
+        const uniqueBooks = [...new Map(books.map((e) => [e.bookTitle, e])).values()];
+        const popular = uniqueBooks
+          .sort((a, b) => (bookFrequency[b.bookTitle] || 0) - (bookFrequency[a.bookTitle] || 0))
+          .slice(0, 5); // Limit to top 5 popular games
+        setPopularBooks(popular);
+      } catch (error) {
+        console.error('Error fetching events:', error.message);
+      }
+    };
+
+    fetchBooks();
   }, []);
 
   const renderItem = (item) => (
     <TouchableOpacity
       style={styles.itemBox}
       onPress={() =>
-        navigation.navigate('GamePurchase', { game: item }) // Navigate to GamePurchase
+        {item.bookTitle ? navigation.navigate('BookPurchase', { book: item }) : navigation.navigate('GamePurchase', { game: item })}
+
       }
     >
       <View style={styles.iconContainer}>
-        <Icon
-          name={sportIcons[item.sport?.toLowerCase()] || sportIcons.default}
-          size={80}
-          color="#fff"
-        />
+        {item.sport?.toLowerCase() === 'basketball' ? (
+          <Image
+            source={require('../assets/UWBasketball.png')}
+            style={{ width: 250, height: 150 }}
+          />
+        ) : item.sport?.toLowerCase() === 'volleyball' ? (
+          <Image
+            source={require('../assets/UWVolleyball.png')}
+            style={{ width: 250, height: 150 }}
+          />
+        ) : item.sport?.toLowerCase() === 'hockey' ? (
+          <Image
+            source={require('../assets/UWhockey.png')}
+            style={{ width: 250, height: 150 }}
+          />
+        ) : item.bookTitle? (
+          <Image
+            source={require('../assets/books.png')}
+            style={{ width: 250, height: 150 }}
+          />
+        ): (
+          <Icon
+            name={sportIcons.default}
+            size={80}
+            color="#fff"
+          />
+        )}
       </View>
       <View style={styles.overlay}>
         <Text style={styles.itemTitle} numberOfLines={1}>
-          {item.game}
+          {item.game || item.bookTitle}
         </Text>
         <Text style={styles.itemDate}>
-          {new Date(item.date).toDateString()} {item.time || ''}
+          {item.bookTitle ? 'Price: $'+item.price : `${new Date(item.date).toDateString()} ${item.time || ''}`}
         </Text>
       </View>
     </TouchableOpacity>
   );
+  
 
   return (
     <View style={styles.container}>
@@ -118,7 +171,14 @@ const HomeScreen = ({ navigation }) => {
         keyExtractor={(item) => `popular-${item.id}`}
         contentContainerStyle={styles.sectionContainer}
       />
-
+      <Text style={styles.sectionTitle}>Popular Books</Text>
+      <FlatList
+        horizontal
+        data={popularBooks}
+        renderItem={({ item }) => renderItem(item)}
+        keyExtractor={(item) => `popular-${item.id}`}
+        contentContainerStyle={styles.sectionContainer}
+      />
       <Text style={styles.sectionTitle}>Upcoming Events</Text>
       <FlatList
         horizontal
