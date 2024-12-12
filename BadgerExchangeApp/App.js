@@ -20,8 +20,10 @@ import { CartProvider } from './components/CartContext';
 import { PurchaseProvider } from './components/PurchaseContext';
 import GamePurchase from './components/GamePurchase';
 import SportDetails from './components/SportsDetails';
+import {LogBox} from 'react-native'
 
 const Stack = createStackNavigator();
+LogBox.ignoreLogs(['Each child in a list should have a unique "key" prop.']); // temporarily suppress unique key error for demo.
 
 const App = () => {
   try {
